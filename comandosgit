@@ -1,0 +1,108 @@
+0) Cria o repositorio no git hub pelo browser
+a) cria o master, deriva a branch developer e deriva a branch infrainicial
+b) Clona o repositorio em algum diretorio (ele vai criar uma pasta)
+>> git clone https://github.com/lccyrillo/investpess-frontweb.git
+
+1) setup de trabalho
+>> git config --global user.email "lccyrillo@gmail.com"
+>> git init
+a) (Esse nao esta precisando mais) git remote add origin https://github.com/lccyrillo/investpess-bffweb-ativo.git
+
+2) Vou criar uma branch de trabalho
+>> git checkout -b infrainicial
+>> git push --set-upstream origin infrainicial
+
+3) Forma geral de trabalho
+--> Verificar a branch que estou
+--> devo trabalhar na branch da release
+>> git branch
+--> se não estou na branch correta, vou para a branch correta
+>> git checkout infrainicial
+
+--> trabalho nos arquivos
+--> vejo as diferencas
+>> git status
+--> adiciono os arquivos necessários
+>> git add .
+--> faço um commit
+>> git commit -a -m "CYRILLO_FEAT_0001 - Montar Api de Health check"
+--> mandar para o repositorio remoto
+>> git push
+
+
+4) Equalizar as branchs para conseguir trabalhar.
+
+>> git checkout -b developer
+>> git merge infrainicial
+>> git push -u origin developer
+
+
+5) se consegui fechar uma versão, posso gerar uma tag
+--> listar tags
+>> git tag
+>> git tag -a v1.5 -m "Versão fechada apresentação Clean Architechture."
+--> mandar a tag para o servidor remoto
+>> git push origin v1.5
+
+6) Se a versão esta fechada e vai para ambiente de homologação ou prod
+--> posso mergear a branch desta feature com a branch de desenvolvimento
+--> vou para o repositorio de desenvolvimento
+>> git checkout developer
+>> git merge testes_unitarios
+>> git push -u origin developer
+
+--> vou para o repositorio de producao
+>> git checkout master
+>> git merge developer
+>> git push -u origin master
+
+7) Como acabei a release anterior, vou criar uma branch nova
+--> entro na developer
+>> git checkout developer
+--> crio a nova branch
+>> git checkout -b evolucao_api_delete
+--> equalizo com a developer
+>> git pull origin developer
+--> faço qualquer alteração e comito
+>> git commit -a -m "CYRILLO_FEAT_0002 Implementar o endpoint de delete de ativo."
+--> manda para o repositorio remoto (o repositorio remoto é criado)
+>> git push origin evolucao_api_delete
+--> posso vincular meu branch local ao branch remoto
+>>  git push --set-upstream origin evolucao_api_delete
+
+
+8) Posso apagar a branch anterior
+
+--> posso apagar a branch anterior (repositorio local)
+--> atenção o -D (maiusculo) perde mudanças
+>> git branch -D refatoracao_conexao
+--> posso agora apagar no repositorio remoto
+>> git push origin --delete refatoracao_conexao
+
+
+
+------------------------------------------------------------------------------------------
+
+>> git clean -f
+--> apaga arquivos que não estão trackeados
+--> arquivos que aparecem no git stauts
+
+>> git gc
+--> otimização de repositório
+
+>> git fsck
+--> checagem de integridade de arquivos
+
+
+>> git archive --format zip --output master_files master
+>> git show v1.0
+
+
+--> Repositorios criados por outros desenvolvedores
+--> utilizo git fetch para puxar a nova branch
+
+--> analise e inspecao de repositorios
+--> conpara versão atual com a master
+git diff master
+--> ou entao
+git diff arquivo1 arquivo2

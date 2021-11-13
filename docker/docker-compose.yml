@@ -1,0 +1,17 @@
+# Use root/example as user/password credentials
+version: '3.8'
+
+services:
+
+  db:
+    image: mysql:8.0.27
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    container_name: mysqlcontainer
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_USER: userativo
+      MYSQL_PASSWORD: passativo
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_ativo_bff
