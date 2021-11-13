@@ -75,9 +75,9 @@ a) (Esse nao esta precisando mais) git remote add origin https://github.com/lccy
 
 --> posso apagar a branch anterior (repositorio local)
 --> atenção o -D (maiusculo) perde mudanças
->> git branch -D refatoracao_conexao
+>> git branch -D main
 --> posso agora apagar no repositorio remoto
->> git push origin --delete refatoracao_conexao
+>> git push origin --delete main
 
 
 
