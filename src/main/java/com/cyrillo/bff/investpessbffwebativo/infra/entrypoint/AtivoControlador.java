@@ -1,14 +1,24 @@
 package com.cyrillo.bff.investpessbffwebativo.infra.entrypoint;
 
+import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.AtivoDtoInterface;
+import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.dto.AtivoDto;
+import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.DataProviderInterface;
+import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.LogInterface;
 import com.cyrillo.bff.investpessbffwebativo.core.entidade.LogProcessamento;
+import com.cyrillo.bff.investpessbffwebativo.core.usecase.IncluirNovoAtivo;
 import com.cyrillo.bff.investpessbffwebativo.core.usecase.LogProcessamentoServico;
+import com.cyrillo.bff.investpessbffwebativo.core.usecase.excecao.AtivoJaExistenteUseCaseExcecao;
+import com.cyrillo.bff.investpessbffwebativo.core.usecase.excecao.AtivoParametrosInvalidosUseCaseExcecao;
+import com.cyrillo.bff.investpessbffwebativo.core.usecase.excecao.ComunicacaoRepoUseCaseExcecao;
+import com.cyrillo.bff.investpessbffwebativo.infra.config.Aplicacao;
+import com.cyrillo.bff.investpessbffwebativo.infra.facade.FacadeAtivo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.function.EntityResponse;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,9 +29,121 @@ public class AtivoControlador {
     @Autowired
     private LogProcessamentoServico logProcessamentoServico;
 
+    @PostMapping
+    public ResponseEntity<AtivoDto> incluirAtivo(@RequestBody AtivoDto ativoDto)  {
+        // Respostas de informação (100-199),
+        //    Respostas de sucesso (200-299),
+        //    Redirecionamentos (300-399)
+        //    Erros do cliente (400-499)
+        //    Erros do servidor (500-599).
+
+        String msgResultado;
+        HttpStatus codResultado;
+        DataProviderInterface dataProvider = Aplicacao.getInstance();
+        //data.geraSessao();
+        String uniqueKey = String.valueOf(dataProvider.getUniqueKey());
+        LogInterface log = dataProvider.getLoggingInterface();
+        List<AtivoDto> lista = null;
+        try {
+            // use case
+            new IncluirNovoAtivo().executar(dataProvider, ativoDto.getSigla(), ativoDto.getNomeAtivo(), ativoDto.getDescricaoCNPJAtivo(), ativoDto.getTipoAtivoInt());
+            codResultado = HttpStatus.CREATED;
+            msgResultado = "Ativo criado com sucesso";
+            // 201
+        }
+        catch (AtivoJaExistenteUseCaseExcecao e) {
+            codResultado = HttpStatus.ALREADY_REPORTED;
+            msgResultado = "Ativo já existente no repositório";
+            // 208
+        }
+        catch (ComunicacaoRepoUseCaseExcecao e) {
+            codResultado = HttpStatus.SERVICE_UNAVAILABLE;
+            msgResultado = "Erro na comunicação com o Repositório!";
+            //503 Service Unavailable
+        }
+        catch (AtivoParametrosInvalidosUseCaseExcecao e) {
+            codResultado = HttpStatus.UNPROCESSABLE_ENTITY;
+            msgResultado = "Tipo Ativo inválido enviado na consulta";
+            // 422
+        }
+        catch(Exception e){
+            codResultado = HttpStatus.INTERNAL_SERVER_ERROR;
+            msgResultado = "Erro não identificado" + e.getMessage();
+            // 500 Internal Server Error
+        }
+        //ResponseEntity<AtivoDto> responseEntity = new ResponseEntity<>();
+        return ResponseEntity.status(codResultado).body(ativoDto);
+    }
+
+
+
+
+
     @GetMapping
-    public List<LogProcessamento> listarTodas(){
-        return logProcessamentoServico.listarTodas();
+    public List<AtivoDtoInterface> listarTodas(){
+
+
+        // 200 - Lista gerada com sucesso
+        // 201 - Lista vazia
+        // 401 - Erro na comunicação com repositório
+        // 402 - Tipo Ativo inválido enviado na consulta
+        // 500 - Erro técnico não identificado.
+
+        String msgResultado;
+        int codResultado;
+
+        DataProviderInterface dataProvider = Aplicacao.getInstance();
+        //data.geraSessao();
+        String uniqueKey = String.valueOf(dataProvider.getUniqueKey());
+        LogInterface log = dataProvider.getLoggingInterface();
+        List<AtivoDtoInterface> lista = null;
+
+        log.logInfo(uniqueKey,"Iniciando API GRPC de Consulta de ativos.");
+        int tipoAtivo = 1;
+        log.logInfo(uniqueKey,"Dados da Request de Lista de Ativos identificados");
+
+        try {
+            // use case
+
+            new IncluirNovoAtivo().executar(dataProvider, "ITUB4", "iTAU", "60.872.504/0001-23", tipoAtivo);
+            new IncluirNovoAtivo().executar(dataProvider, "BBDC4", "Bradesco", "60.872.504/0001-23", tipoAtivo);
+        }
+        catch(Exception e){
+            codResultado = 500;
+            msgResultado = "Erro não identificado" + e.getMessage();
+        }
+
+
+        try {
+                // use case
+
+
+                lista = new FacadeAtivo().executarListarAtivosPorTipo(dataProvider,tipoAtivo);
+            if (lista.size() == 0) {
+                codResultado = 201;
+                msgResultado = "Lista Vazia.";
+            }
+            else {
+                codResultado = 200;
+                msgResultado = "Lista ok";
+            }
+        }
+        catch (ComunicacaoRepoUseCaseExcecao e) {
+            codResultado = 401;
+            msgResultado = "Erro na comunicação com o Repositório!";
+        }
+        catch (AtivoParametrosInvalidosUseCaseExcecao e) {
+            codResultado = 402;
+            msgResultado = "Tipo Ativo inválido enviado na consulta";
+        }
+        catch(Exception e){
+            codResultado = 500;
+            msgResultado = "Erro não identificado" + e.getMessage();
+        }
+
+
+
+        return lista;
     }
 
     @GetMapping("/{idLog}")
