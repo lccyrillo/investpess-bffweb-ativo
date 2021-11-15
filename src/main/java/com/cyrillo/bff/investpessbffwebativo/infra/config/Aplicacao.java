@@ -1,7 +1,10 @@
 package com.cyrillo.bff.investpessbffwebativo.infra.config;
 
-import com.cyrillo.bff.investpessbffwebativo.InvestpessBffwebAtivoApplication;
+import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.AtivoRepositorioInterface;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.DataProviderInterface;
+import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.LogInterface;
+import com.cyrillo.bff.investpessbffwebativo.infra.dataprovider.AtivoRepositorioImplMemoria;
+import com.cyrillo.bff.investpessbffwebativo.infra.dataprovider.LogInterfaceImplConsole;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -16,6 +19,8 @@ import java.util.UUID;
 @SpringBootApplication
 public class Aplicacao implements DataProviderInterface {
     private static Aplicacao instance;
+    private AtivoRepositorioInterface ativoRepositorio;
+    private LogInterface logAplicacao;
 
     public static Aplicacao getInstance(){
         if(instance == null){
@@ -31,6 +36,8 @@ public class Aplicacao implements DataProviderInterface {
     public void inicializaAplicacao(String[] args){
         try {
             // do some stuff
+            this.ativoRepositorio = new AtivoRepositorioImplMemoria();
+            this.logAplicacao = new LogInterfaceImplConsole();
         }
         catch (Exception e){
           System.out.println("Não foi possível inicializar a aplicação.");
@@ -57,5 +64,12 @@ public class Aplicacao implements DataProviderInterface {
     public boolean healthCheckOk(DataProviderInterface data) {
         return true;
     }
+
+    public LogInterface getLoggingInterface() {
+        return this.logAplicacao;
+    }
+
+    @Override
+    public AtivoRepositorioInterface getAtivoRepositorio() { return this.ativoRepositorio;}
 
 }

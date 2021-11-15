@@ -7,4 +7,6 @@ public interface DataProviderInterface {
     public boolean healthCheckOk(DataProviderInterface data);
     public int getTimeOutDefault();
     public DataProviderInterface geraSessao();
+    public LogInterface getLoggingInterface();
+    public AtivoRepositorioInterface getAtivoRepositorio();
 }
