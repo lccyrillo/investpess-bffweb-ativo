@@ -1,7 +1,6 @@
 package com.cyrillo.bff.investpessbffwebativo.infra.entrypoint;
 
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.AtivoDtoInterface;
-import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.dto.AtivoDto;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.DataProviderInterface;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.LogInterface;
 import com.cyrillo.bff.investpessbffwebativo.core.entidade.LogProcessamento;
@@ -41,13 +40,14 @@ public class AtivoControlador {
 
         String msgResultado;
         HttpStatus codResultado;
-        DataProviderInterface dataProvider = Aplicacao.getInstance();
-        //data.geraSessao();
+        DataProviderInterface dataProvider = FacadeAtivo.getInstance().getDataProviderInterface();
         String uniqueKey = String.valueOf(dataProvider.getUniqueKey());
         LogInterface log = dataProvider.getLoggingInterface();
+        log.logInfo(null,"Entrou no método controller incluir ativo");
         try {
             // use case
-            new IncluirNovoAtivo().executar(dataProvider, ativoRequest.getSigla(), ativoRequest.getNomeAtivo(), ativoRequest.getDescricaoCNPJAtivo(), ativoRequest.getTipoAtivoInt());
+            DataProviderInterface sessao = dataProvider.geraSessao();
+            FacadeAtivo.getInstance().executarIncluirNovoAtivo(sessao,ativoRequest.getSigla(), ativoRequest.getNomeAtivo(), ativoRequest.getDescricaoCNPJAtivo(), ativoRequest.getTipoAtivoInt());
             codResultado = HttpStatus.CREATED;
             msgResultado = "Ativo criado com sucesso";
             // 201
@@ -72,8 +72,10 @@ public class AtivoControlador {
             msgResultado = "Erro não identificado" + e.getMessage();
             // 500 Internal Server Error
         }
+        log.logInfo(null,"Controller ativo. Formatando response.");
         //ResponseEntity<AtivoDto> responseEntity = new ResponseEntity<>();
         AtivoResponse ativoResponse = new AtivoResponse(ativoRequest,codResultado.value(),msgResultado);
+        log.logInfo(null,"Controller ativo. Resposta formatada.");
         return ResponseEntity.status(codResultado).body(ativoResponse);
     }
 
@@ -92,9 +94,9 @@ public class AtivoControlador {
 
         String msgResultado;
         int codResultado;
+        FacadeAtivo facadeAtivo = FacadeAtivo.getInstance();
 
-        DataProviderInterface dataProvider = Aplicacao.getInstance();
-        //data.geraSessao();
+        DataProviderInterface dataProvider = facadeAtivo.getDataProviderInterface();
         String uniqueKey = String.valueOf(dataProvider.getUniqueKey());
         LogInterface log = dataProvider.getLoggingInterface();
         List<AtivoDtoInterface> lista = null;
@@ -117,9 +119,8 @@ public class AtivoControlador {
 
         try {
                 // use case
-
-
-                lista = new FacadeAtivo().executarListarAtivosPorTipo(dataProvider,tipoAtivo);
+                DataProviderInterface sessao = dataProvider.geraSessao();
+                lista = FacadeAtivo.getInstance().executarListarAtivosPorTipo(sessao,tipoAtivo);
             if (lista.size() == 0) {
                 codResultado = 201;
                 msgResultado = "Lista Vazia.";

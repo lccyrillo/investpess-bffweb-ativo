@@ -5,6 +5,7 @@ import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.DataProviderInter
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.LogInterface;
 import com.cyrillo.bff.investpessbffwebativo.infra.dataprovider.AtivoRepositorioImplMemoria;
 import com.cyrillo.bff.investpessbffwebativo.infra.dataprovider.LogInterfaceImplConsole;
+import com.cyrillo.bff.investpessbffwebativo.infra.facade.FacadeAtivo;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -36,6 +37,8 @@ public class Aplicacao implements DataProviderInterface {
     public void inicializaAplicacao(String[] args){
         try {
             // do some stuff
+            FacadeAtivo facadeAtivo = FacadeAtivo.getInstance();
+            facadeAtivo.setDataProviderInterface(this);
             this.ativoRepositorio = new AtivoRepositorioImplMemoria();
             this.logAplicacao = new LogInterfaceImplConsole();
         }
@@ -56,9 +59,10 @@ public class Aplicacao implements DataProviderInterface {
     }
 
     @Override
-    public DataProviderInterface geraSessao() {
-        return null;
+    public DataProviderInterface geraSessao(){
+        return new Sessao();
     }
+
 
     @Override
     public boolean healthCheckOk(DataProviderInterface data) {
@@ -71,5 +75,14 @@ public class Aplicacao implements DataProviderInterface {
 
     @Override
     public AtivoRepositorioInterface getAtivoRepositorio() { return this.ativoRepositorio;}
+
+    public LogInterface gerarNovoObjetoLog() {
+        // deve ler parametros de configurar e instanciar a implementação correta de log
+        // Por enquanto so tem uma implementacao
+        // pode ser usado para o log de cada sessao / requisição
+        return new LogInterfaceImplConsole();
+    }
+
+
 
 }
