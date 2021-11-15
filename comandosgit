@@ -64,7 +64,7 @@ a) (Esse nao esta precisando mais) git remote add origin https://github.com/lccy
 --> equalizo com a developer
 >> git pull origin developer
 --> faço qualquer alteração e comito
->> git commit -a -m "CYRILLO_FEAT_0002 Implementar o endpoint de delete de ativo."
+>> git commit -a -m "ISSUE_003 - Organizar arquitetura do BFF para utilizar clean architecture."
 --> manda para o repositorio remoto (o repositorio remoto é criado)
 >> git push origin evolucao_api_delete
 --> posso vincular meu branch local ao branch remoto
