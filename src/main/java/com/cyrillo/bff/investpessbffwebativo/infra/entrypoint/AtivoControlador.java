@@ -11,6 +11,8 @@ import com.cyrillo.bff.investpessbffwebativo.core.usecase.excecao.AtivoJaExisten
 import com.cyrillo.bff.investpessbffwebativo.core.usecase.excecao.AtivoParametrosInvalidosUseCaseExcecao;
 import com.cyrillo.bff.investpessbffwebativo.core.usecase.excecao.ComunicacaoRepoUseCaseExcecao;
 import com.cyrillo.bff.investpessbffwebativo.infra.config.Aplicacao;
+import com.cyrillo.bff.investpessbffwebativo.infra.entrypoint.inout.AtivoRequest;
+import com.cyrillo.bff.investpessbffwebativo.infra.entrypoint.inout.AtivoResponse;
 import com.cyrillo.bff.investpessbffwebativo.infra.facade.FacadeAtivo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,7 +32,7 @@ public class AtivoControlador {
     private LogProcessamentoServico logProcessamentoServico;
 
     @PostMapping
-    public ResponseEntity<AtivoDto> incluirAtivo(@RequestBody AtivoDto ativoDto)  {
+    public ResponseEntity<AtivoResponse> incluirAtivo(@RequestBody AtivoRequest ativoRequest)  {
         // Respostas de informação (100-199),
         //    Respostas de sucesso (200-299),
         //    Redirecionamentos (300-399)
@@ -43,10 +45,9 @@ public class AtivoControlador {
         //data.geraSessao();
         String uniqueKey = String.valueOf(dataProvider.getUniqueKey());
         LogInterface log = dataProvider.getLoggingInterface();
-        List<AtivoDto> lista = null;
         try {
             // use case
-            new IncluirNovoAtivo().executar(dataProvider, ativoDto.getSigla(), ativoDto.getNomeAtivo(), ativoDto.getDescricaoCNPJAtivo(), ativoDto.getTipoAtivoInt());
+            new IncluirNovoAtivo().executar(dataProvider, ativoRequest.getSigla(), ativoRequest.getNomeAtivo(), ativoRequest.getDescricaoCNPJAtivo(), ativoRequest.getTipoAtivoInt());
             codResultado = HttpStatus.CREATED;
             msgResultado = "Ativo criado com sucesso";
             // 201
@@ -72,9 +73,9 @@ public class AtivoControlador {
             // 500 Internal Server Error
         }
         //ResponseEntity<AtivoDto> responseEntity = new ResponseEntity<>();
-        return ResponseEntity.status(codResultado).body(ativoDto);
+        AtivoResponse ativoResponse = new AtivoResponse(ativoRequest,codResultado.value(),msgResultado);
+        return ResponseEntity.status(codResultado).body(ativoResponse);
     }
-
 
 
 
