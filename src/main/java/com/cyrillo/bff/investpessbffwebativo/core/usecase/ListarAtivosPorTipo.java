@@ -4,7 +4,7 @@ import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.*;
 import com.cyrillo.bff.investpessbffwebativo.core.entidade.TipoAtivo;
 import com.cyrillo.bff.investpessbffwebativo.core.entidade.excecao.ParametroTipoInvalidoEntExcecao;
 import com.cyrillo.bff.investpessbffwebativo.core.usecase.excecao.AtivoParametrosInvalidosUseCaseExcecao;
-import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.excecao.ComunicacaoRepoDataProvExcecao;
+import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.excecao.ComunicacaoRepositorioDataProviderExcecao;
 import com.cyrillo.bff.investpessbffwebativo.core.usecase.excecao.ComunicacaoRepoUseCaseExcecao;
 
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ public class ListarAtivosPorTipo {
             e.printStackTrace();
             throw falha;
         }
-        catch (ComunicacaoRepoDataProvExcecao e) {
+        catch (ComunicacaoRepositorioDataProviderExcecao e) {
             ComunicacaoRepoUseCaseExcecao falha = new ComunicacaoRepoUseCaseExcecao("Falha na comunicação do Use Case com Repositório: AtivoRepositorio");
             falha.addSuppressed(e);
             log.logError(uniqueKey, "Erro na comunicação com repositório.");

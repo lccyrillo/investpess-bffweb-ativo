@@ -4,7 +4,9 @@ import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.AtivoRepositorioI
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.DataProviderInterface;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.LogInterface;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.dto.AtivoDto;
-import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.excecao.ComunicacaoRepoDataProvExcecao;
+import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.excecao.AtivoJaExistenteDataProviderExcecao;
+import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.excecao.ComunicacaoRepositorioDataProviderExcecao;
+import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.excecao.DadosInvalidosDataProviderExcecao;
 import com.cyrillo.bff.investpessbffwebativo.core.entidade.AtivoObjeto;
 import com.cyrillo.bff.investpessbffwebativo.core.entidade.excecao.ParametroCNPJInvalidoEntExcecao;
 import com.cyrillo.bff.investpessbffwebativo.core.entidade.excecao.ParametroTipoInvalidoEntExcecao;
@@ -16,43 +18,36 @@ public class IncluirNovoAtivo {
 
     public IncluirNovoAtivo(){}
 
-    public void executar(DataProviderInterface data,String sigla, String nomeAtivo, String descricaoCNPJAtivo, int tipoAtivo) throws AtivoJaExistenteUseCaseExcecao, ComunicacaoRepoUseCaseExcecao, AtivoParametrosInvalidosUseCaseExcecao {
+    public void executar(DataProviderInterface data,String sigla, String nomeAtivo, String descricaoCNPJAtivo, int tipoAtivo) throws AtivoJaExistenteUseCaseExcecao, ComunicacaoRepoUseCaseExcecao, AtivoParametrosInvalidosUseCaseExcecao  {
         // Mapa de resultados do use case
-        AtivoRepositorioInterface repo = data.getAtivoRepositorio();
+        AtivoRepositorioInterface ativoRepositorio = data.getAtivoRepositorio();
         LogInterface log = data.getLoggingInterface();
         String uniqueKey =String.valueOf(data.getUniqueKey());
 
         log.logInfo(uniqueKey,"Iniciando Use Case Incluir Novo Ativo");
 
-        sigla = sigla.toUpperCase();
+        if (sigla != null) {
+            sigla = sigla.toUpperCase();
+        }
+
         try {
-            if (repo.consultarPorSigla(data, sigla) == false) {
-                // --> Se a consulta falhar na comunicação com banco de dados, vai gerar uma exceção que precisará ser tratada.
-                // Posso cadastrar ativo
-                AtivoDto ativoDto = new AtivoDto(sigla, nomeAtivo, descricaoCNPJAtivo, tipoAtivo);
-                // Faço esse passo para garantir o Dto está criando um objeto válido.
-                AtivoObjeto ativoObjeto = ativoDto.builder();
-                repo.incluir(data, ativoDto);
-                log.logInfo(uniqueKey, "Ativo incluído com sucesso");
-            }
-            else {
-                // Erro: Sigla já existente
-                // Lançar exceção AtivoJaExistenteException
-                log.logInfo(uniqueKey, "Ativo já existe no repositório");
-                throw new AtivoJaExistenteUseCaseExcecao(sigla);
-            }
+            ativoRepositorio.incluirAtivo(data,sigla,nomeAtivo,descricaoCNPJAtivo,tipoAtivo);
         }
-        catch (ParametroCNPJInvalidoEntExcecao e){
-            log.logError(uniqueKey,"CNPJ Inválido");
+        catch (AtivoJaExistenteDataProviderExcecao e) {
+            AtivoJaExistenteUseCaseExcecao falha = new AtivoJaExistenteUseCaseExcecao("Ativo já existente!");
+            falha.addSuppressed(e);
+            log.logError(uniqueKey, "Ativo já existente.");
             e.printStackTrace();
-            throw new AtivoParametrosInvalidosUseCaseExcecao("CNPJ Inválido");
+            throw falha;
         }
-        catch (ParametroTipoInvalidoEntExcecao e){
-            log.logError(uniqueKey,"Tipo Inválido");
+        catch (DadosInvalidosDataProviderExcecao e) {
+            AtivoParametrosInvalidosUseCaseExcecao falha = new AtivoParametrosInvalidosUseCaseExcecao("Dados inválidos da solicitação.");
+            falha.addSuppressed(e);
+            log.logError(uniqueKey, "Dados inválidos da solicitação.");
             e.printStackTrace();
-            throw new AtivoParametrosInvalidosUseCaseExcecao("Tipo Inválido");
+            throw falha;
         }
-        catch (ComunicacaoRepoDataProvExcecao e) {
+        catch (ComunicacaoRepositorioDataProviderExcecao e) {
             ComunicacaoRepoUseCaseExcecao falha = new ComunicacaoRepoUseCaseExcecao("Falha na comunicação do Use Case com Repositório: AtivoRepositorio");
             falha.addSuppressed(e);
             log.logError(uniqueKey, "Erro na comunicação com repositório.");

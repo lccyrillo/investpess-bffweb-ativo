@@ -1,15 +1,19 @@
 package com.cyrillo.bff.investpessbffwebativo.core.dataprovider;
 
+import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.excecao.AtivoJaExistenteDataProviderExcecao;
+import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.excecao.DadosInvalidosDataProviderExcecao;
 import com.cyrillo.bff.investpessbffwebativo.core.usecase.excecao.AtivoParametrosInvalidosUseCaseExcecao;
-import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.excecao.ComunicacaoRepoDataProvExcecao;
+import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.excecao.ComunicacaoRepositorioDataProviderExcecao;
 
 import java.util.List;
 
 // Acerto exceção
 public interface AtivoRepositorioInterface {
-    void incluir(DataProviderInterface data, AtivoDtoInterface ativoObjeto) throws ComunicacaoRepoDataProvExcecao;
-    boolean consultarPorSigla(DataProviderInterface data, String siglaAtivo) throws ComunicacaoRepoDataProvExcecao;
+
+    void incluirAtivo(DataProviderInterface data,String sigla, String nomeAtivo, String descricaoCNPJAtivo, int tipoAtivo) throws ComunicacaoRepositorioDataProviderExcecao, DadosInvalidosDataProviderExcecao, AtivoJaExistenteDataProviderExcecao;
+    void incluir(DataProviderInterface data, AtivoDtoInterface ativoObjeto) throws ComunicacaoRepositorioDataProviderExcecao;
+    boolean consultarPorSigla(DataProviderInterface data, String siglaAtivo) throws ComunicacaoRepositorioDataProviderExcecao;
     List<AtivoDtoInterface> listarTodosAtivos(DataProviderInterface data);
-    List<AtivoDtoInterface> listarAtivosPorTipo(DataProviderInterface data, int tipoAtivo) throws ComunicacaoRepoDataProvExcecao, AtivoParametrosInvalidosUseCaseExcecao;
-    void healthCheck(DataProviderInterface data) throws ComunicacaoRepoDataProvExcecao;
+    List<AtivoDtoInterface> listarAtivosPorTipo(DataProviderInterface data, int tipoAtivo) throws ComunicacaoRepositorioDataProviderExcecao, AtivoParametrosInvalidosUseCaseExcecao;
+    void healthCheck(DataProviderInterface data) throws ComunicacaoRepositorioDataProviderExcecao;
 }

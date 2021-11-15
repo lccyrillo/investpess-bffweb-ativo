@@ -64,7 +64,7 @@ public class AtivoControlador {
         }
         catch (AtivoParametrosInvalidosUseCaseExcecao e) {
             codResultado = HttpStatus.UNPROCESSABLE_ENTITY;
-            msgResultado = "Tipo Ativo inválido enviado na consulta";
+            msgResultado = "Parâmetros inválido enviado na consulta";
             // 422
         }
         catch(Exception e){
