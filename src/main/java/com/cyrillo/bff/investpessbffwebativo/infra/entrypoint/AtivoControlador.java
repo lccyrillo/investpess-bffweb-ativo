@@ -1,21 +1,22 @@
 package com.cyrillo.bff.investpessbffwebativo.infra.entrypoint;
 
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.AtivoDtoInterface;
+import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.dto.AtivoDto;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.DataProviderInterface;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.LogInterface;
 import com.cyrillo.bff.investpessbffwebativo.core.entidade.LogProcessamento;
 import com.cyrillo.bff.investpessbffwebativo.core.usecase.IncluirNovoAtivo;
 import com.cyrillo.bff.investpessbffwebativo.core.usecase.LogProcessamentoServico;
+import com.cyrillo.bff.investpessbffwebativo.core.usecase.excecao.AtivoJaExistenteUseCaseExcecao;
 import com.cyrillo.bff.investpessbffwebativo.core.usecase.excecao.AtivoParametrosInvalidosUseCaseExcecao;
 import com.cyrillo.bff.investpessbffwebativo.core.usecase.excecao.ComunicacaoRepoUseCaseExcecao;
 import com.cyrillo.bff.investpessbffwebativo.infra.config.Aplicacao;
 import com.cyrillo.bff.investpessbffwebativo.infra.facade.FacadeAtivo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.function.EntityResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,36 @@ public class AtivoControlador {
 
     @Autowired
     private LogProcessamentoServico logProcessamentoServico;
+
+    @PostMapping
+    public ResponseEntity<AtivoDto> incluirAtivo(@RequestBody AtivoDto ativoDto)  {
+        String msgResultado;
+        int codResultado;
+        DataProviderInterface dataProvider = Aplicacao.getInstance();
+        //data.geraSessao();
+        String uniqueKey = String.valueOf(dataProvider.getUniqueKey());
+        LogInterface log = dataProvider.getLoggingInterface();
+        List<AtivoDto> lista = null;
+        try {
+            // use case
+            new IncluirNovoAtivo().executar(dataProvider, ativoDto.getSigla(), ativoDto.getNomeAtivo(), ativoDto.getDescricaoCNPJAtivo(), ativoDto.getTipoAtivoInt());
+        }
+        catch (ComunicacaoRepoUseCaseExcecao e) {
+            codResultado = 401;
+            msgResultado = "Erro na comunicação com o Repositório!";
+        }
+        catch (AtivoParametrosInvalidosUseCaseExcecao e) {
+            codResultado = 402;
+            msgResultado = "Tipo Ativo inválido enviado na consulta";
+        }
+        catch(Exception e){
+            codResultado = 500;
+            msgResultado = "Erro não identificado" + e.getMessage();
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(ativoDto);
+
+
+    }
 
     @GetMapping
     public List<AtivoDtoInterface> listarTodas(){
@@ -54,9 +85,20 @@ public class AtivoControlador {
         try {
             // use case
 
-            new IncluirNovoAtivo().executar(dataProvider,"'ITUB4","iTAU","60.872.504/0001-23",tipoAtivo);
+            new IncluirNovoAtivo().executar(dataProvider, "ITUB4", "iTAU", "60.872.504/0001-23", tipoAtivo);
+            new IncluirNovoAtivo().executar(dataProvider, "BBDC4", "Bradesco", "60.872.504/0001-23", tipoAtivo);
+        }
+        catch(Exception e){
+            codResultado = 500;
+            msgResultado = "Erro não identificado" + e.getMessage();
+        }
 
-            lista = new FacadeAtivo().executarListarAtivosPorTipo(dataProvider,tipoAtivo);
+
+        try {
+                // use case
+
+
+                lista = new FacadeAtivo().executarListarAtivosPorTipo(dataProvider,tipoAtivo);
             if (lista.size() == 0) {
                 codResultado = 201;
                 msgResultado = "Lista Vazia.";
