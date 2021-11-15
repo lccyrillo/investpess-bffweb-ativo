@@ -1,0 +1,14 @@
+1) Levantar o container detachado
+>> docker-compose up -d
+
+2) Ver os processos
+>> docker ps
+
+3) Conectar no mysql e rodar comandos
+>> docker exec -it mysqlcontainer mysql -u userativo -p db_ativo_bff
+
+Mostra os databases
+>> show databases;
+>> use db_ativo_bff;
+>> show tables;
+
