@@ -64,7 +64,7 @@ a) (Esse nao esta precisando mais) git remote add origin https://github.com/lccy
 --> equalizo com a developer
 >> git pull origin developer
 --> faço qualquer alteração e comito
->> git commit -a -m "COMMIT_0009 - ISSUE_#8 - Refatorar objeto Data provider para que possa ser acessado pelo entry point."
+>> git commit -a -m "COMMIT_0010 - ISSUE_#9 - Validar os campos de entrada do método rest Incluir ativo e dar a resposta correta em caso de erro.
 --> manda para o repositorio remoto (o repositorio remoto é criado)
 >> git push origin evolucao_api_delete
 --> posso vincular meu branch local ao branch remoto
