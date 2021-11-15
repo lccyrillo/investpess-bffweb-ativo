@@ -31,8 +31,14 @@ public class AtivoControlador {
 
     @PostMapping
     public ResponseEntity<AtivoDto> incluirAtivo(@RequestBody AtivoDto ativoDto)  {
+        // Respostas de informação (100-199),
+        //    Respostas de sucesso (200-299),
+        //    Redirecionamentos (300-399)
+        //    Erros do cliente (400-499)
+        //    Erros do servidor (500-599).
+
         String msgResultado;
-        int codResultado;
+        HttpStatus codResultado;
         DataProviderInterface dataProvider = Aplicacao.getInstance();
         //data.geraSessao();
         String uniqueKey = String.valueOf(dataProvider.getUniqueKey());
@@ -41,23 +47,37 @@ public class AtivoControlador {
         try {
             // use case
             new IncluirNovoAtivo().executar(dataProvider, ativoDto.getSigla(), ativoDto.getNomeAtivo(), ativoDto.getDescricaoCNPJAtivo(), ativoDto.getTipoAtivoInt());
+            codResultado = HttpStatus.CREATED;
+            msgResultado = "Ativo criado com sucesso";
+            // 201
+        }
+        catch (AtivoJaExistenteUseCaseExcecao e) {
+            codResultado = HttpStatus.ALREADY_REPORTED;
+            msgResultado = "Ativo já existente no repositório";
+            // 208
         }
         catch (ComunicacaoRepoUseCaseExcecao e) {
-            codResultado = 401;
+            codResultado = HttpStatus.SERVICE_UNAVAILABLE;
             msgResultado = "Erro na comunicação com o Repositório!";
+            //503 Service Unavailable
         }
         catch (AtivoParametrosInvalidosUseCaseExcecao e) {
-            codResultado = 402;
+            codResultado = HttpStatus.UNPROCESSABLE_ENTITY;
             msgResultado = "Tipo Ativo inválido enviado na consulta";
+            // 422
         }
         catch(Exception e){
-            codResultado = 500;
+            codResultado = HttpStatus.INTERNAL_SERVER_ERROR;
             msgResultado = "Erro não identificado" + e.getMessage();
+            // 500 Internal Server Error
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(ativoDto);
-
-
+        //ResponseEntity<AtivoDto> responseEntity = new ResponseEntity<>();
+        return ResponseEntity.status(codResultado).body(ativoDto);
     }
+
+
+
+
 
     @GetMapping
     public List<AtivoDtoInterface> listarTodas(){
