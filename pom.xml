@@ -15,6 +15,21 @@
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>11</java.version>
+
+		<!-- protobuf paths -->
+		<protobuf.input.directory>${project.basedir}/src/main/proto</protobuf.input.directory>
+		<protobuf.output.directory>${project.build.directory}/generated-sources</protobuf.output.directory>
+
+		<!-- library versions -->
+		<build-helper-maven-plugin.version>1.9.1</build-helper-maven-plugin.version>
+		<maven-antrun-plugin.version>3.0.0</maven-antrun-plugin.version>
+		<maven-dependency-plugin.version>3.0.1</maven-dependency-plugin.version>
+		<maven-shade-plugin.version>2.4.2</maven-shade-plugin.version>
+		<os-maven-plugin.version>1.4.1.Final</os-maven-plugin.version>
+		<protobuf.version>3.19.1</protobuf.version>
+
+
+
 	</properties>
 	<dependencies>
 		<dependency>
@@ -50,6 +65,13 @@
 		</dependency>
 
 
+		<dependency>
+			<groupId>com.google.protobuf</groupId>
+			<artifactId>protobuf-java</artifactId>
+			<version>${protobuf.version}</version>
+		</dependency>
+
+
 	</dependencies>
 
 	<build>
@@ -58,7 +80,50 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+
+
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.0</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.xolstice.maven.plugins</groupId>
+				<artifactId>protobuf-maven-plugin</artifactId>
+				<version>0.6.1</version>
+				<configuration>
+					<protocExecutable>C:\Users\lccyr\.jdks\proto3\bin\protoc.exe</protocExecutable>
+
+					<!-- protobuf paths
+					<protoSourceRoot>${project.basedir}/src/main/protobuf/</protoSourceRoot>
+					<outputDirectory>${project.basedir}/src/main/protobuf/java/</outputDirectory>
+                    -->
+
+				</configuration>
+
+
+
+				<executions>
+					<execution>
+						<goals>
+							<goal>compile</goal>
+							<goal>test-compile</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+
+
 		</plugins>
+
+
+
 	</build>
 
 </project>
