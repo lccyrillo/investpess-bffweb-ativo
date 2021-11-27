@@ -3,6 +3,7 @@ a) cria o master, deriva a branch developer e deriva a branch infrainicial
 b) Clona o repositorio em algum diretorio (ele vai criar uma pasta)
 >> git clone https://github.com/lccyrillo/investpess-frontweb.git
 
+
 1) setup de trabalho
 >> git config --global user.email "lccyrillo@gmail.com"
 >> git init
@@ -25,7 +26,7 @@ a) (Esse nao esta precisando mais) git remote add origin https://github.com/lccy
 --> adiciono os arquivos necessários
 >> git add .
 --> faço um commit
->> git commit -a -m "CYRILLO_FEAT_0001 - Montar Api de Health check"
+>> git commit -a -m "COMMIT_0011 - ISSUE_#10 - Eliminar objetos do Core."
 --> mandar para o repositorio remoto
 >> git push
 
