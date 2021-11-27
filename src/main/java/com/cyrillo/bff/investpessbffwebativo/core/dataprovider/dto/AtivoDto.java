@@ -1,8 +1,6 @@
 package com.cyrillo.bff.investpessbffwebativo.core.dataprovider.dto;
 
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.AtivoDtoInterface;
-import com.cyrillo.bff.investpessbffwebativo.core.entidade.AtivoObjeto;
-import com.cyrillo.bff.investpessbffwebativo.core.entidade.TipoAtivo;
 import com.cyrillo.bff.investpessbffwebativo.core.entidade.excecao.ParametroCNPJInvalidoEntExcecao;
 import com.cyrillo.bff.investpessbffwebativo.core.entidade.excecao.ParametroTipoInvalidoEntExcecao;
 
@@ -19,9 +17,6 @@ public class AtivoDto implements AtivoDtoInterface {
         this.tipoAtivo = tipoAtivo;
     }
 
-    public AtivoObjeto builder() throws ParametroCNPJInvalidoEntExcecao, ParametroTipoInvalidoEntExcecao {
-        return new AtivoObjeto(sigla,nomeAtivo,descricaoCNPJAtivo,new TipoAtivo(tipoAtivo));
-    }
     public String getSigla() {
         return sigla;
     }

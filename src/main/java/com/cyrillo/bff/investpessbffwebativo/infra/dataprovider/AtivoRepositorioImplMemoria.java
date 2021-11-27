@@ -7,8 +7,6 @@ import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.dto.AtivoDto;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.excecao.AtivoJaExistenteDataProviderExcecao;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.excecao.ComunicacaoRepositorioDataProviderExcecao;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.excecao.DadosInvalidosDataProviderExcecao;
-import com.cyrillo.bff.investpessbffwebativo.core.entidade.AtivoObjeto;
-import com.cyrillo.bff.investpessbffwebativo.core.entidade.excecao.ParametroCNPJInvalidoEntExcecao;
 
 import java.util.ArrayList;
 import java.util.List;
