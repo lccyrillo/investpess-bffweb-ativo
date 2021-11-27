@@ -26,7 +26,7 @@ a) (Esse nao esta precisando mais) git remote add origin https://github.com/lccy
 --> adiciono os arquivos necessários
 >> git add .
 --> faço um commit
->> git commit -a -m "COMMIT_0011 - ISSUE_#10 - Eliminar objetos do Core."
+>> git commit -a -m "COMMIT_0012 - ISSUE_#4 - Implementar data provider que vai consumir a api GRPC de inclusao do ativo."
 --> mandar para o repositorio remoto
 >> git push
 
