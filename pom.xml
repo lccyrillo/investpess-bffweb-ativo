@@ -27,6 +27,7 @@
 		<maven-shade-plugin.version>2.4.2</maven-shade-plugin.version>
 		<os-maven-plugin.version>1.4.1.Final</os-maven-plugin.version>
 		<protobuf.version>3.19.1</protobuf.version>
+		<os.detected.classifier>windows-x86_64</os.detected.classifier>
 
 
 
@@ -72,6 +73,38 @@
 		</dependency>
 
 
+		<dependency>
+			<groupId>io.grpc</groupId>
+			<artifactId>grpc-netty-shaded</artifactId>
+			<version>1.42.1</version>
+		</dependency>
+		<dependency>
+			<groupId>io.grpc</groupId>
+			<artifactId>grpc-protobuf</artifactId>
+			<version>1.42.1</version>
+		</dependency>
+		<dependency>
+			<groupId>io.grpc</groupId>
+			<artifactId>grpc-stub</artifactId>
+			<version>1.42.1</version>
+		</dependency>
+			<!-- https://mvnrepository.com/artifact/io.grpc/protoc-gen-grpc-java -->
+			<dependency>
+				<groupId>io.grpc</groupId>
+				<artifactId>protoc-gen-grpc-java</artifactId>
+				<version>1.42.1</version>
+				<type>pom</type>
+			</dependency>
+
+
+		<dependency> <!-- necessary for Java 9+ -->
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>annotations-api</artifactId>
+			<version>6.0.53</version>
+			<scope>provided</scope>
+		</dependency>
+
+
 	</dependencies>
 
 	<build>
@@ -102,7 +135,14 @@
 					<!-- protobuf paths
 					<protoSourceRoot>${project.basedir}/src/main/protobuf/</protoSourceRoot>
 					<outputDirectory>${project.basedir}/src/main/protobuf/java/</outputDirectory>
+
+
+
+
                     -->
+					<pluginId>grpc-java</pluginId>
+					<pluginArtifact>io.grpc:protoc-gen-grpc-java:1.42.1:exe:${os.detected.classifier}</pluginArtifact>
+
 
 				</configuration>
 
@@ -112,11 +152,14 @@
 					<execution>
 						<goals>
 							<goal>compile</goal>
+							<goal>compile-custom</goal>
 							<goal>test-compile</goal>
 						</goals>
 					</execution>
 				</executions>
 			</plugin>
+
+
 
 
 

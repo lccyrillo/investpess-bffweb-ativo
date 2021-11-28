@@ -3,6 +3,7 @@ package com.cyrillo.bff.investpessbffwebativo.infra.config;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.AtivoRepositorioInterface;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.DataProviderInterface;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.LogInterface;
+import com.cyrillo.bff.investpessbffwebativo.infra.dataprovider.AtivoRepositorioImplGRPC;
 import com.cyrillo.bff.investpessbffwebativo.infra.dataprovider.AtivoRepositorioImplMemoria;
 import com.cyrillo.bff.investpessbffwebativo.infra.dataprovider.LogInterfaceImplConsole;
 import com.cyrillo.bff.investpessbffwebativo.infra.facade.FacadeAtivo;
@@ -39,13 +40,15 @@ public class Aplicacao implements DataProviderInterface {
             // do some stuff
             FacadeAtivo facadeAtivo = FacadeAtivo.getInstance();
             facadeAtivo.setDataProviderInterface(this);
-            this.ativoRepositorio = new AtivoRepositorioImplMemoria();
+            //this.ativoRepositorio = new AtivoRepositorioImplMemoria();
+            this.ativoRepositorio = new AtivoRepositorioImplGRPC();
             this.logAplicacao = new LogInterfaceImplConsole();
         }
         catch (Exception e){
           System.out.println("Não foi possível inicializar a aplicação.");
           e.printStackTrace();
         }
+        // Precisa colocar um tratamento aqui para não iniciar a aplicação se der erro na exceção.
         SpringApplication.run(Aplicacao.class,args);
     }
 

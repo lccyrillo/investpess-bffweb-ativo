@@ -1,0 +1,6 @@
+1) Rodar protobuf - compile para gerar as mensagens
+2) Rodar protobug - compile custom para gerar os serviços
+
+--> Os arquivos compilados são gerados na pasta: generated
+-----> generated sources / protobuf / java
+-----> generated sources / protobuf / grpc - java
