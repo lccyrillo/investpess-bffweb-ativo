@@ -11,7 +11,6 @@ import java.util.List;
 public interface AtivoRepositorioInterface {
 
     void incluirAtivo(DataProviderInterface data,String sigla, String nomeAtivo, String descricaoCNPJAtivo, int tipoAtivo) throws ComunicacaoRepositorioDataProviderExcecao, DadosInvalidosDataProviderExcecao, AtivoJaExistenteDataProviderExcecao;
-    void incluir(DataProviderInterface data, AtivoDtoInterface ativoObjeto) throws ComunicacaoRepositorioDataProviderExcecao;
     boolean consultarPorSigla(DataProviderInterface data, String siglaAtivo) throws ComunicacaoRepositorioDataProviderExcecao;
     List<AtivoDtoInterface> listarTodosAtivos(DataProviderInterface data);
     List<AtivoDtoInterface> listarAtivosPorTipo(DataProviderInterface data, int tipoAtivo) throws ComunicacaoRepositorioDataProviderExcecao, AtivoParametrosInvalidosUseCaseExcecao;

@@ -47,4 +47,8 @@ public class Sessao implements DataProviderInterface {
     }
 
 
+    public ClienteGRPC getClienteGRPC() {
+        return Aplicacao.getInstance().getClienteGRPC();
+    }
+
 }

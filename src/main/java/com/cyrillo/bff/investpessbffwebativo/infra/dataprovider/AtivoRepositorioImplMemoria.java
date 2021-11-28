@@ -35,11 +35,6 @@ public class AtivoRepositorioImplMemoria implements AtivoRepositorioInterface {
     }
 
     @Override
-    public void incluir(DataProviderInterface data, AtivoDtoInterface ativoObjeto) throws ComunicacaoRepositorioDataProviderExcecao {
-        this.listaAtivoObjeto.add(ativoObjeto);
-    }
-
-    @Override
     public boolean consultarPorSigla(DataProviderInterface data, String siglaAtivo) throws ComunicacaoRepositorioDataProviderExcecao {
         if (this.listaAtivoObjeto.stream()
             .filter(a -> a.getSigla().equals(siglaAtivo))

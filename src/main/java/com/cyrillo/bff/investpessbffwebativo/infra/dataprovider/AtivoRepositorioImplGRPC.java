@@ -7,6 +7,7 @@ import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.dto.AtivoDto;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.excecao.AtivoJaExistenteDataProviderExcecao;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.excecao.ComunicacaoRepositorioDataProviderExcecao;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.excecao.DadosInvalidosDataProviderExcecao;
+import com.cyrillo.bff.investpessbffwebativo.infra.config.ClienteGRPC;
 import proto.ativo.ativoobjetoproto.*;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -17,23 +18,26 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class AtivoRepositorioImplGRPC implements AtivoRepositorioInterface {
-    private List<AtivoDtoInterface> listaAtivoObjeto = new ArrayList<>();
 
     public AtivoRepositorioImplGRPC(){
 
-        System.out.println("Hello I am Client");
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost",50051).
-                usePlaintext().
-                build();
-        //System.out.println("Creating a Stub");
 
-        AtivoServerServiceGrpc.AtivoServerServiceBlockingStub client = AtivoServerServiceGrpc.newBlockingStub(channel);
+
+
+    }
+
+    @Override
+    public void incluirAtivo(DataProviderInterface data,String sigla, String nomeAtivo, String descricaoCNPJAtivo, int tipoAtivo) throws ComunicacaoRepositorioDataProviderExcecao, DadosInvalidosDataProviderExcecao, AtivoJaExistenteDataProviderExcecao {
+
+        ClienteGRPC clienteGRPC = data.getClienteGRPC();
+        AtivoServerServiceGrpc.AtivoServerServiceBlockingStub client = clienteGRPC.getInstanciaClienteGRPC();
+
 
         AtivoObjeto ativoObjeto = AtivoObjeto.newBuilder().
-                setTipoAtivo(1).
-                setDescricaoCnpjAtivo("60.872.5----001-23").
-                setNomeAtivo("ITAU UNIBANCO HOLDING S.A.").
-                setSiglaAtivo("ITUB4").
+                setTipoAtivo(tipoAtivo).
+                setDescricaoCnpjAtivo(descricaoCNPJAtivo).
+                setNomeAtivo(nomeAtivo).
+                setSiglaAtivo(sigla).
                 build();
 
         CadastraAtivoObjetoRequest request = CadastraAtivoObjetoRequest.newBuilder().
@@ -45,38 +49,34 @@ public class AtivoRepositorioImplGRPC implements AtivoRepositorioInterface {
         System.out.println(response.getResponseCode() + " - " + response.getResponseMessage());
 
 
-        ativoObjeto = AtivoObjeto.newBuilder().
-                setTipoAtivo(1).
-                setDescricaoCnpjAtivo("60.872.504/0001-23").
-                setNomeAtivo("ITAU UNIBANCO HOLDING S.A.").
-                setSiglaAtivo("ITUB4").
-                build();
-
-        request = CadastraAtivoObjetoRequest.newBuilder().
-                setAtivo(ativoObjeto).
-                build();
-
-        response = client.cadastraAtivoObjeto(request);
-
-        System.out.println(response.getResponseCode() + " - " + response.getResponseMessage());
 
 
-        ativoObjeto = AtivoObjeto.newBuilder().
-                setTipoAtivo(1).
-                setDescricaoCnpjAtivo("00.000.000/0001-91").
-                setNomeAtivo("BANCO DO BRASIL S.A").
-                setSiglaAtivo("BBAS3").
-                build();
-
-        request = CadastraAtivoObjetoRequest.newBuilder().
-                setAtivo(ativoObjeto).
-                build();
-
-        response = client.cadastraAtivoObjeto(request);
-
-        System.out.println(response.getResponseCode() + " - " + response.getResponseMessage());
+        if (descricaoCNPJAtivo == null || sigla == null || nomeAtivo == null  ) {
+            throw new DadosInvalidosDataProviderExcecao("Sigla, nome do ativo ou CPNPJ não podem ser nulos!");
+        }
+        //else if (this.consultarPorSigla(data, sigla) == true) {
+        //    throw new AtivoJaExistenteDataProviderExcecao("Ativo já existente!");
+       // }
+    }
 
 
+    @Override
+    public boolean consultarPorSigla(DataProviderInterface data, String siglaAtivo) throws ComunicacaoRepositorioDataProviderExcecao {
+            return false;
+
+    }
+
+    @Override
+    public List<AtivoDtoInterface> listarTodosAtivos(DataProviderInterface data) {
+        return null;
+
+    }
+
+    @Override
+    public List<AtivoDtoInterface> listarAtivosPorTipo(DataProviderInterface data, int tipoAtivo) {
+
+        ClienteGRPC clienteGRPC = data.getClienteGRPC();
+        AtivoServerServiceGrpc.AtivoServerServiceBlockingStub client = clienteGRPC.getInstanciaClienteGRPC();
 
 
         ConsultaListaAtivoRequest request2 = ConsultaListaAtivoRequest.newBuilder()
@@ -88,59 +88,19 @@ public class AtivoRepositorioImplGRPC implements AtivoRepositorioInterface {
         // faz loop pela lista de ativos
         int totalItens = response2.getAtivosCount();
 
+        AtivoDtoInterface ativoObjetoDto;
+        List<AtivoDtoInterface> listaAtivoObjeto = new ArrayList<>();
         for (int i =0; i <totalItens; i++) {
+
+            ativoObjetoDto = new AtivoDto(response2.getAtivos(i).getSiglaAtivo(), response2.getAtivos(i).getNomeAtivo(), response2.getAtivos(i).getDescricaoCnpjAtivo(), response2.getAtivos(i).getTipoAtivo());
+            listaAtivoObjeto.add(ativoObjetoDto);
             System.out.println(response2.getAtivos(i).getSiglaAtivo() + " - " + response2.getAtivos(i).getNomeAtivo());
         }
-        System.out.println("Shutting down de client");
-        channel.shutdown();
 
 
-    }
+        return listaAtivoObjeto;
 
-    @Override
-    public void incluirAtivo(DataProviderInterface data,String sigla, String nomeAtivo, String descricaoCNPJAtivo, int tipoAtivo) throws ComunicacaoRepositorioDataProviderExcecao, DadosInvalidosDataProviderExcecao, AtivoJaExistenteDataProviderExcecao {
 
-        if (descricaoCNPJAtivo == null || sigla == null || nomeAtivo == null  ) {
-            throw new DadosInvalidosDataProviderExcecao("Sigla, nome do ativo ou CPNPJ não podem ser nulos!");
-        }
-        else if (this.consultarPorSigla(data, sigla) == true) {
-            throw new AtivoJaExistenteDataProviderExcecao("Ativo já existente!");
-        }
-        else {
-            AtivoDtoInterface ativoObjeto = new AtivoDto(sigla, nomeAtivo, descricaoCNPJAtivo, tipoAtivo);
-            this.listaAtivoObjeto.add(ativoObjeto);
-        }
-    }
-
-    @Override
-    public void incluir(DataProviderInterface data, AtivoDtoInterface ativoObjeto) throws ComunicacaoRepositorioDataProviderExcecao {
-        this.listaAtivoObjeto.add(ativoObjeto);
-    }
-
-    @Override
-    public boolean consultarPorSigla(DataProviderInterface data, String siglaAtivo) throws ComunicacaoRepositorioDataProviderExcecao {
-        if (this.listaAtivoObjeto.stream()
-            .filter(a -> a.getSigla().equals(siglaAtivo))
-            .findFirst().isPresent()) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
-    @Override
-    public List<AtivoDtoInterface> listarTodosAtivos(DataProviderInterface data) {
-        return this.listaAtivoObjeto;
-
-    }
-
-    @Override
-    public List<AtivoDtoInterface> listarAtivosPorTipo(DataProviderInterface data, int tipoAtivo) {
-
-        return this.listaAtivoObjeto.stream()
-                .filter(a -> a.getTipoAtivoInt() == tipoAtivo)
-                .collect(Collectors.toList());
     }
 
     @Override

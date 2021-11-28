@@ -1,5 +1,7 @@
 package com.cyrillo.bff.investpessbffwebativo.core.dataprovider;
 
+import com.cyrillo.bff.investpessbffwebativo.infra.config.ClienteGRPC;
+
 import java.util.UUID;
 
 public interface DataProviderInterface {
@@ -9,4 +11,5 @@ public interface DataProviderInterface {
     public DataProviderInterface geraSessao();
     public LogInterface getLoggingInterface();
     public AtivoRepositorioInterface getAtivoRepositorio();
+    public ClienteGRPC getClienteGRPC();
 }

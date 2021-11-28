@@ -13,6 +13,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
+
 import java.util.UUID;
 
 @EntityScan(basePackages = {"com.cyrillo.bff.investpessbffwebativo.core.entidade"})
@@ -23,6 +24,8 @@ public class Aplicacao implements DataProviderInterface {
     private static Aplicacao instance;
     private AtivoRepositorioInterface ativoRepositorio;
     private LogInterface logAplicacao;
+
+    private ClienteGRPC clienteGRPC;
 
     public static Aplicacao getInstance(){
         if(instance == null){
@@ -40,6 +43,12 @@ public class Aplicacao implements DataProviderInterface {
             // do some stuff
             FacadeAtivo facadeAtivo = FacadeAtivo.getInstance();
             facadeAtivo.setDataProviderInterface(this);
+            // cria um canal cliente para chamada GRPC
+            clienteGRPC = new ClienteGRPC();
+            clienteGRPC.inicializaClienteGRPC();
+
+
+
             //this.ativoRepositorio = new AtivoRepositorioImplMemoria();
             this.ativoRepositorio = new AtivoRepositorioImplGRPC();
             this.logAplicacao = new LogInterfaceImplConsole();
@@ -51,6 +60,18 @@ public class Aplicacao implements DataProviderInterface {
         // Precisa colocar um tratamento aqui para não iniciar a aplicação se der erro na exceção.
         SpringApplication.run(Aplicacao.class,args);
     }
+
+    public void finalizaAplicacao(){
+        this.clienteGRPC.finalizaClienteGRPC();
+    }
+
+
+    public ClienteGRPC getClienteGRPC() {
+        return clienteGRPC;
+    }
+
+
+
 
     public UUID getUniqueKey(){
         return null;
