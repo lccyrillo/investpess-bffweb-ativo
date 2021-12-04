@@ -1,4 +1,4 @@
-package com.cyrillo.bff.investpessbffwebativo.infra.config;
+package com.cyrillo.bff.investpessbffwebativo.infra.dataprovider;
 
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.excecao.DadosInvalidosDataProviderExcecao;
 import com.cyrillo.bff.investpessbffwebativo.core.usecase.excecao.AtivoParametrosInvalidosUseCaseExcecao;

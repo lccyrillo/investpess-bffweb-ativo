@@ -7,15 +7,12 @@ import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.dto.AtivoDto;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.excecao.AtivoJaExistenteDataProviderExcecao;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.excecao.ComunicacaoRepositorioDataProviderExcecao;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.excecao.DadosInvalidosDataProviderExcecao;
-import com.cyrillo.bff.investpessbffwebativo.core.usecase.excecao.AtivoParametrosInvalidosUseCaseExcecao;
-import com.cyrillo.bff.investpessbffwebativo.infra.config.ClienteGRPC;
 import proto.ativo.ativoobjetoproto.*;
 
 
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class AtivoRepositorioImplGRPC implements AtivoRepositorioInterface {
 
@@ -30,9 +27,8 @@ public class AtivoRepositorioImplGRPC implements AtivoRepositorioInterface {
     public void incluirAtivo(DataProviderInterface data,String sigla, String nomeAtivo, String descricaoCNPJAtivo, int tipoAtivo) throws ComunicacaoRepositorioDataProviderExcecao, DadosInvalidosDataProviderExcecao, AtivoJaExistenteDataProviderExcecao {
         int responseCode;
 
-
         if (descricaoCNPJAtivo == null || sigla == null || nomeAtivo == null  ) {
-            throw new DadosInvalidosDataProviderExcecao("Sigla, nome do ativo ou CPNPJ não podem ser nulos!");
+            responseCode = 422; //
         }
         else {
             try {
@@ -54,23 +50,27 @@ public class AtivoRepositorioImplGRPC implements AtivoRepositorioInterface {
                 CadastraAtivoObjetoResponse response = client.cadastraAtivoObjeto(request);
                 //System.out.println(response.getResponseCode() + " - " + response.getResponseMessage());
                 responseCode = response.getResponseCode();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 ComunicacaoRepositorioDataProviderExcecao falha = new ComunicacaoRepositorioDataProviderExcecao("Falha na comunicação com servidor GRPC!");
                 falha.addSuppressed(e);
                 //log.logError(uniqueKey, "Dados inválidos da solicitação.");
                 e.printStackTrace();
                 throw falha;
             }
-            if (responseCode == 200) {
-                // Sucesso!
-            }
-            else if (responseCode == 101) {
-                throw new AtivoJaExistenteDataProviderExcecao("Ativo já existente!");
-            }
-            else  {
-                throw new ComunicacaoRepositorioDataProviderExcecao("Falha na comunicação com servidor GRPC!");
-            }
+        }
+
+        if (responseCode == 200) {
+            // Sucesso!
+        }
+        else if (responseCode == 101) {
+            throw new AtivoJaExistenteDataProviderExcecao("Ativo já existente!");
+        }
+
+        else if (responseCode == 422) {
+            throw new DadosInvalidosDataProviderExcecao("Sigla, nome do ativo ou CPNPJ não podem ser nulos!");
+        }
+        else {
+            throw new ComunicacaoRepositorioDataProviderExcecao("Falha na comunicação com servidor GRPC!");
         }
     }
 
@@ -89,34 +89,39 @@ public class AtivoRepositorioImplGRPC implements AtivoRepositorioInterface {
     }
 
     @Override
-    public List<AtivoDtoInterface> listarAtivosPorTipo(DataProviderInterface data, int tipoAtivo) {
-
-        ClienteGRPC clienteGRPC = data.getClienteGRPC();
-        AtivoServerServiceGrpc.AtivoServerServiceBlockingStub client = clienteGRPC.getInstanciaClienteGRPC();
-
-
-        ConsultaListaAtivoRequest request2 = ConsultaListaAtivoRequest.newBuilder()
-                .setTipoAtivo(1)
-                .build();
-        ConsultaListaAtivoResponse response2 = client.consultaListaAtivo(request2);
-        String resultadoProcessamento = "Resultado Processamento: " + response2.getResponseCode() + " - " + response2.getResponseMessage();
-        System.out.println(resultadoProcessamento);
-        // faz loop pela lista de ativos
-        int totalItens = response2.getAtivosCount();
-
-        AtivoDtoInterface ativoObjetoDto;
+    public List<AtivoDtoInterface> listarAtivosPorTipo(DataProviderInterface data, int tipoAtivo) throws ComunicacaoRepositorioDataProviderExcecao {
         List<AtivoDtoInterface> listaAtivoObjeto = new ArrayList<>();
-        for (int i =0; i <totalItens; i++) {
 
-            ativoObjetoDto = new AtivoDto(response2.getAtivos(i).getSiglaAtivo(), response2.getAtivos(i).getNomeAtivo(), response2.getAtivos(i).getDescricaoCnpjAtivo(), response2.getAtivos(i).getTipoAtivo());
-            listaAtivoObjeto.add(ativoObjetoDto);
-            System.out.println(response2.getAtivos(i).getSiglaAtivo() + " - " + response2.getAtivos(i).getNomeAtivo());
+        try {
+
+            ClienteGRPC clienteGRPC = data.getClienteGRPC();
+            AtivoServerServiceGrpc.AtivoServerServiceBlockingStub client = clienteGRPC.getInstanciaClienteGRPC();
+
+            ConsultaListaAtivoRequest requestListaAtivosPorTipo = ConsultaListaAtivoRequest.newBuilder()
+                    .setTipoAtivo(tipoAtivo)
+                    .build();
+            ConsultaListaAtivoResponse responseListaAtivosPorTipo = client.consultaListaAtivo(requestListaAtivosPorTipo);
+            //String resultadoProcessamento = "Resultado Processamento: " + response2.getResponseCode() + " - " + response2.getResponseMessage();
+            //System.out.println(resultadoProcessamento);
+            // faz loop pela lista de ativos
+            int totalItens = responseListaAtivosPorTipo.getAtivosCount();
+
+            AtivoDtoInterface ativoObjetoDto;
+            for (int i = 0; i < totalItens; i++) {
+
+                ativoObjetoDto = new AtivoDto(responseListaAtivosPorTipo.getAtivos(i).getSiglaAtivo(), responseListaAtivosPorTipo.getAtivos(i).getNomeAtivo(), responseListaAtivosPorTipo.getAtivos(i).getDescricaoCnpjAtivo(), responseListaAtivosPorTipo.getAtivos(i).getTipoAtivo());
+                listaAtivoObjeto.add(ativoObjetoDto);
+                //System.out.println(responseListaAtivosPorTipo.getAtivos(i).getSiglaAtivo() + " - " + responseListaAtivosPorTipo.getAtivos(i).getNomeAtivo());
+            }
         }
-
-
+        catch (Exception e) {
+            ComunicacaoRepositorioDataProviderExcecao falha = new ComunicacaoRepositorioDataProviderExcecao("Falha na comunicação com servidor GRPC!");
+            falha.addSuppressed(e);
+            //log.logError(uniqueKey, "Dados inválidos da solicitação.");
+            e.printStackTrace();
+            throw falha;
+        }
         return listaAtivoObjeto;
-
-
     }
 
     @Override

@@ -1,9 +1,9 @@
 package com.cyrillo.bff.investpessbffwebativo.infra.config;
 
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.AtivoRepositorioInterface;
-import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.ConexaoInterface;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.DataProviderInterface;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.LogInterface;
+import com.cyrillo.bff.investpessbffwebativo.infra.dataprovider.ClienteGRPC;
 
 import java.util.UUID;
 

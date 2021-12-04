@@ -4,7 +4,7 @@ import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.AtivoRepositorioI
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.DataProviderInterface;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.LogInterface;
 import com.cyrillo.bff.investpessbffwebativo.infra.dataprovider.AtivoRepositorioImplGRPC;
-import com.cyrillo.bff.investpessbffwebativo.infra.dataprovider.AtivoRepositorioImplMemoria;
+import com.cyrillo.bff.investpessbffwebativo.infra.dataprovider.ClienteGRPC;
 import com.cyrillo.bff.investpessbffwebativo.infra.dataprovider.LogInterfaceImplConsole;
 import com.cyrillo.bff.investpessbffwebativo.infra.facade.FacadeAtivo;
 import org.springframework.boot.SpringApplication;

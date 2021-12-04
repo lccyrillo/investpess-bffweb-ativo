@@ -83,7 +83,8 @@ public class AtivoControlador {
 
 
     @GetMapping
-    public List<AtivoDtoInterface> listarTodas(){
+    public ResponseEntity<List<AtivoDtoInterface>> listarTodas()  {
+    //public List<AtivoDtoInterface> listarTodas(){
 
 
         // 200 - Lista gerada com sucesso
@@ -106,18 +107,6 @@ public class AtivoControlador {
         log.logInfo(uniqueKey,"Dados da Request de Lista de Ativos identificados");
 
         try {
-            // use case
-
-            new IncluirNovoAtivo().executar(dataProvider, "ITUB4", "iTAU", "60.872.504/0001-23", tipoAtivo);
-            new IncluirNovoAtivo().executar(dataProvider, "BBDC4", "Bradesco", "60.872.504/0001-23", tipoAtivo);
-        }
-        catch(Exception e){
-            codResultado = 500;
-            msgResultado = "Erro não identificado" + e.getMessage();
-        }
-
-
-        try {
                 // use case
                 DataProviderInterface sessao = dataProvider.geraSessao();
                 lista = FacadeAtivo.getInstance().executarListarAtivosPorTipo(sessao,tipoAtivo);
@@ -131,8 +120,14 @@ public class AtivoControlador {
             }
         }
         catch (ComunicacaoRepoUseCaseExcecao e) {
-            codResultado = 401;
+            codResultado = 503;
             msgResultado = "Erro na comunicação com o Repositório!";
+
+            //codResultado = HttpStatus.SERVICE_UNAVAILABLE;
+            //msgResultado = "Erro na comunicação com o Repositório!";
+            //503 Service Unavailable
+
+
         }
         catch (AtivoParametrosInvalidosUseCaseExcecao e) {
             codResultado = 402;
@@ -143,9 +138,10 @@ public class AtivoControlador {
             msgResultado = "Erro não identificado" + e.getMessage();
         }
 
+        log.logInfo(null,"Controller ativo. Resposta formatada.");
+        return ResponseEntity.status(codResultado).body(lista);
 
-
-        return lista;
+        //return lista;
     }
 
     @GetMapping("/{idLog}")

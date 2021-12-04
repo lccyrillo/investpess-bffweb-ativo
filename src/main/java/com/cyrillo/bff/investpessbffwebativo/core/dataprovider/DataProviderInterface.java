@@ -1,6 +1,6 @@
 package com.cyrillo.bff.investpessbffwebativo.core.dataprovider;
 
-import com.cyrillo.bff.investpessbffwebativo.infra.config.ClienteGRPC;
+import com.cyrillo.bff.investpessbffwebativo.infra.dataprovider.ClienteGRPC;
 
 import java.util.UUID;
 
