@@ -7,10 +7,10 @@ import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.dto.AtivoDto;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.excecao.AtivoJaExistenteDataProviderExcecao;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.excecao.ComunicacaoRepositorioDataProviderExcecao;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.excecao.DadosInvalidosDataProviderExcecao;
+import com.cyrillo.bff.investpessbffwebativo.core.usecase.excecao.AtivoParametrosInvalidosUseCaseExcecao;
 import com.cyrillo.bff.investpessbffwebativo.infra.config.ClienteGRPC;
 import proto.ativo.ativoobjetoproto.*;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
+
 
 
 import java.util.ArrayList;
@@ -28,36 +28,52 @@ public class AtivoRepositorioImplGRPC implements AtivoRepositorioInterface {
 
     @Override
     public void incluirAtivo(DataProviderInterface data,String sigla, String nomeAtivo, String descricaoCNPJAtivo, int tipoAtivo) throws ComunicacaoRepositorioDataProviderExcecao, DadosInvalidosDataProviderExcecao, AtivoJaExistenteDataProviderExcecao {
-
-        ClienteGRPC clienteGRPC = data.getClienteGRPC();
-        AtivoServerServiceGrpc.AtivoServerServiceBlockingStub client = clienteGRPC.getInstanciaClienteGRPC();
-
-
-        AtivoObjeto ativoObjeto = AtivoObjeto.newBuilder().
-                setTipoAtivo(tipoAtivo).
-                setDescricaoCnpjAtivo(descricaoCNPJAtivo).
-                setNomeAtivo(nomeAtivo).
-                setSiglaAtivo(sigla).
-                build();
-
-        CadastraAtivoObjetoRequest request = CadastraAtivoObjetoRequest.newBuilder().
-                setAtivo(ativoObjeto).
-                build();
-
-        CadastraAtivoObjetoResponse response = client.cadastraAtivoObjeto(request);
-
-        System.out.println(response.getResponseCode() + " - " + response.getResponseMessage());
-
-
+        int responseCode;
 
 
         if (descricaoCNPJAtivo == null || sigla == null || nomeAtivo == null  ) {
             throw new DadosInvalidosDataProviderExcecao("Sigla, nome do ativo ou CPNPJ não podem ser nulos!");
         }
-        //else if (this.consultarPorSigla(data, sigla) == true) {
-        //    throw new AtivoJaExistenteDataProviderExcecao("Ativo já existente!");
-       // }
+        else {
+            try {
+                ClienteGRPC clienteGRPC = data.getClienteGRPC();
+                AtivoServerServiceGrpc.AtivoServerServiceBlockingStub client = clienteGRPC.getInstanciaClienteGRPC();
+
+
+                AtivoObjeto ativoObjeto = AtivoObjeto.newBuilder().
+                        setTipoAtivo(tipoAtivo).
+                        setDescricaoCnpjAtivo(descricaoCNPJAtivo).
+                        setNomeAtivo(nomeAtivo).
+                        setSiglaAtivo(sigla).
+                        build();
+
+                CadastraAtivoObjetoRequest request = CadastraAtivoObjetoRequest.newBuilder().
+                        setAtivo(ativoObjeto).
+                        build();
+
+                CadastraAtivoObjetoResponse response = client.cadastraAtivoObjeto(request);
+                //System.out.println(response.getResponseCode() + " - " + response.getResponseMessage());
+                responseCode = response.getResponseCode();
+            }
+            catch (Exception e) {
+                ComunicacaoRepositorioDataProviderExcecao falha = new ComunicacaoRepositorioDataProviderExcecao("Falha na comunicação com servidor GRPC!");
+                falha.addSuppressed(e);
+                //log.logError(uniqueKey, "Dados inválidos da solicitação.");
+                e.printStackTrace();
+                throw falha;
+            }
+            if (responseCode == 200) {
+                // Sucesso!
+            }
+            else if (responseCode == 101) {
+                throw new AtivoJaExistenteDataProviderExcecao("Ativo já existente!");
+            }
+            else  {
+                throw new ComunicacaoRepositorioDataProviderExcecao("Falha na comunicação com servidor GRPC!");
+            }
+        }
     }
+
 
 
     @Override
