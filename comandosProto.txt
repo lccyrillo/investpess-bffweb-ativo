@@ -4,3 +4,7 @@
 --> Os arquivos compilados são gerados na pasta: generated
 -----> generated sources / protobuf / java
 -----> generated sources / protobuf / grpc - java
+
+não esquecer de baixar e colocar o proto no diretorio a seguir
+
+<protocExecutable>C:\Users\lccyr\.jdks\proto3\bin\protoc.exe</protocExecutable>

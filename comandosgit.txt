@@ -26,7 +26,8 @@ a) (Esse nao esta precisando mais) git remote add origin https://github.com/lccy
 --> adiciono os arquivos necessários
 >> git add .
 --> faço um commit
->> git commit -a -m "COMMIT_0014 - ISSUE_#13 - No endpoint da api GET de listagem de ativos, precisa evoluir com os response codes http."
+>> git commit -a -m "COMMIT_0014 - ISSUE_#14 - No endpoint da api GET de listagem de ativos, precisa evoluir com os response codes http."
+
 --> mandar para o repositorio remoto
 >> git push
 
