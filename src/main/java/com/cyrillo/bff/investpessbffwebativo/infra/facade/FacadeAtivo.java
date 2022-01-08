@@ -7,16 +7,39 @@ import com.cyrillo.bff.investpessbffwebativo.core.usecase.ListarAtivosPorTipo;
 import com.cyrillo.bff.investpessbffwebativo.core.usecase.excecao.AtivoJaExistenteUseCaseExcecao;
 import com.cyrillo.bff.investpessbffwebativo.core.usecase.excecao.AtivoParametrosInvalidosUseCaseExcecao;
 import com.cyrillo.bff.investpessbffwebativo.core.usecase.excecao.ComunicacaoRepoUseCaseExcecao;
+import com.cyrillo.bff.investpessbffwebativo.infra.config.Aplicacao;
 
 import java.util.List;
 
 public class FacadeAtivo {
-    public FacadeAtivo(){
+    private static FacadeAtivo instance;
+
+    public DataProviderInterface getDataProviderInterface() {
+        return dataProviderInterface;
     }
-    public void executarIncluirNovoAtivo(DataProviderInterface data, String sigla, String nomeAtivo, String descricaoCNPJAtivo, int tipoAtivo) throws AtivoJaExistenteUseCaseExcecao, ComunicacaoRepoUseCaseExcecao, AtivoParametrosInvalidosUseCaseExcecao {
-        new IncluirNovoAtivo().executar(data,sigla,nomeAtivo,descricaoCNPJAtivo,tipoAtivo);
+    private DataProviderInterface dataProviderInterface;
+
+    public static FacadeAtivo getInstance(){
+        if(instance == null){
+            synchronized (FacadeAtivo.class) {
+                if(instance == null){
+                    instance = new FacadeAtivo();
+                }
+            }
+        }
+        return instance;
     }
-    public List<AtivoDtoInterface> executarListarAtivosPorTipo(DataProviderInterface data, int tipoAtivo) throws ComunicacaoRepoUseCaseExcecao, AtivoParametrosInvalidosUseCaseExcecao {
-        return new ListarAtivosPorTipo().executar(data,tipoAtivo);
+
+
+    public void setDataProviderInterface(DataProviderInterface dataProviderInterface) {
+        this.dataProviderInterface = dataProviderInterface;
+    }
+
+
+    public void executarIncluirNovoAtivo(DataProviderInterface sessao, String sigla, String nomeAtivo, String descricaoCNPJAtivo, int tipoAtivo) throws AtivoJaExistenteUseCaseExcecao, ComunicacaoRepoUseCaseExcecao, AtivoParametrosInvalidosUseCaseExcecao {
+        new IncluirNovoAtivo().executar(sessao,sigla,nomeAtivo,descricaoCNPJAtivo,tipoAtivo);
+    }
+    public List<AtivoDtoInterface> executarListarAtivosPorTipo(DataProviderInterface sessao, int tipoAtivo) throws ComunicacaoRepoUseCaseExcecao, AtivoParametrosInvalidosUseCaseExcecao {
+        return new ListarAtivosPorTipo().executar(sessao,tipoAtivo);
     }
 }

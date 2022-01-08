@@ -1,7 +1,6 @@
 package com.cyrillo.bff.investpessbffwebativo.infra.entrypoint;
 
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.AtivoDtoInterface;
-import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.dto.AtivoDto;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.DataProviderInterface;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.LogInterface;
 import com.cyrillo.bff.investpessbffwebativo.core.entidade.LogProcessamento;
@@ -11,6 +10,8 @@ import com.cyrillo.bff.investpessbffwebativo.core.usecase.excecao.AtivoJaExisten
 import com.cyrillo.bff.investpessbffwebativo.core.usecase.excecao.AtivoParametrosInvalidosUseCaseExcecao;
 import com.cyrillo.bff.investpessbffwebativo.core.usecase.excecao.ComunicacaoRepoUseCaseExcecao;
 import com.cyrillo.bff.investpessbffwebativo.infra.config.Aplicacao;
+import com.cyrillo.bff.investpessbffwebativo.infra.entrypoint.inout.AtivoRequest;
+import com.cyrillo.bff.investpessbffwebativo.infra.entrypoint.inout.AtivoResponse;
 import com.cyrillo.bff.investpessbffwebativo.infra.facade.FacadeAtivo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,7 @@ public class AtivoControlador {
     private LogProcessamentoServico logProcessamentoServico;
 
     @PostMapping
-    public ResponseEntity<AtivoDto> incluirAtivo(@RequestBody AtivoDto ativoDto)  {
+    public ResponseEntity<AtivoResponse> incluirAtivo(@RequestBody AtivoRequest ativoRequest)  {
         // Respostas de informação (100-199),
         //    Respostas de sucesso (200-299),
         //    Redirecionamentos (300-399)
@@ -39,14 +40,14 @@ public class AtivoControlador {
 
         String msgResultado;
         HttpStatus codResultado;
-        DataProviderInterface dataProvider = Aplicacao.getInstance();
-        //data.geraSessao();
+        DataProviderInterface dataProvider = FacadeAtivo.getInstance().getDataProviderInterface();
         String uniqueKey = String.valueOf(dataProvider.getUniqueKey());
         LogInterface log = dataProvider.getLoggingInterface();
-        List<AtivoDto> lista = null;
+        log.logInfo(null,"Entrou no método controller incluir ativo");
         try {
             // use case
-            new IncluirNovoAtivo().executar(dataProvider, ativoDto.getSigla(), ativoDto.getNomeAtivo(), ativoDto.getDescricaoCNPJAtivo(), ativoDto.getTipoAtivoInt());
+            DataProviderInterface sessao = dataProvider.geraSessao();
+            FacadeAtivo.getInstance().executarIncluirNovoAtivo(sessao,ativoRequest.getSigla(), ativoRequest.getNomeAtivo(), ativoRequest.getDescricaoCNPJAtivo(), ativoRequest.getTipoAtivoInt());
             codResultado = HttpStatus.CREATED;
             msgResultado = "Ativo criado com sucesso";
             // 201
@@ -63,7 +64,7 @@ public class AtivoControlador {
         }
         catch (AtivoParametrosInvalidosUseCaseExcecao e) {
             codResultado = HttpStatus.UNPROCESSABLE_ENTITY;
-            msgResultado = "Tipo Ativo inválido enviado na consulta";
+            msgResultado = "Parâmetros inválido enviado na consulta";
             // 422
         }
         catch(Exception e){
@@ -71,16 +72,19 @@ public class AtivoControlador {
             msgResultado = "Erro não identificado" + e.getMessage();
             // 500 Internal Server Error
         }
+        log.logInfo(null,"Controller ativo. Formatando response.");
         //ResponseEntity<AtivoDto> responseEntity = new ResponseEntity<>();
-        return ResponseEntity.status(codResultado).body(ativoDto);
+        AtivoResponse ativoResponse = new AtivoResponse(ativoRequest,codResultado.value(),msgResultado);
+        log.logInfo(null,"Controller ativo. Resposta formatada.");
+        return ResponseEntity.status(codResultado).body(ativoResponse);
     }
 
 
 
 
-
     @GetMapping
-    public List<AtivoDtoInterface> listarTodas(){
+    public ResponseEntity<List<AtivoDtoInterface>> listarTodas()  {
+    //public List<AtivoDtoInterface> listarTodas(){
 
 
         // 200 - Lista gerada com sucesso
@@ -91,9 +95,9 @@ public class AtivoControlador {
 
         String msgResultado;
         int codResultado;
+        FacadeAtivo facadeAtivo = FacadeAtivo.getInstance();
 
-        DataProviderInterface dataProvider = Aplicacao.getInstance();
-        //data.geraSessao();
+        DataProviderInterface dataProvider = facadeAtivo.getDataProviderInterface();
         String uniqueKey = String.valueOf(dataProvider.getUniqueKey());
         LogInterface log = dataProvider.getLoggingInterface();
         List<AtivoDtoInterface> lista = null;
@@ -103,22 +107,9 @@ public class AtivoControlador {
         log.logInfo(uniqueKey,"Dados da Request de Lista de Ativos identificados");
 
         try {
-            // use case
-
-            new IncluirNovoAtivo().executar(dataProvider, "ITUB4", "iTAU", "60.872.504/0001-23", tipoAtivo);
-            new IncluirNovoAtivo().executar(dataProvider, "BBDC4", "Bradesco", "60.872.504/0001-23", tipoAtivo);
-        }
-        catch(Exception e){
-            codResultado = 500;
-            msgResultado = "Erro não identificado" + e.getMessage();
-        }
-
-
-        try {
                 // use case
-
-
-                lista = new FacadeAtivo().executarListarAtivosPorTipo(dataProvider,tipoAtivo);
+                DataProviderInterface sessao = dataProvider.geraSessao();
+                lista = FacadeAtivo.getInstance().executarListarAtivosPorTipo(sessao,tipoAtivo);
             if (lista.size() == 0) {
                 codResultado = 201;
                 msgResultado = "Lista Vazia.";
@@ -129,8 +120,14 @@ public class AtivoControlador {
             }
         }
         catch (ComunicacaoRepoUseCaseExcecao e) {
-            codResultado = 401;
+            codResultado = 503;
             msgResultado = "Erro na comunicação com o Repositório!";
+
+            //codResultado = HttpStatus.SERVICE_UNAVAILABLE;
+            //msgResultado = "Erro na comunicação com o Repositório!";
+            //503 Service Unavailable
+
+
         }
         catch (AtivoParametrosInvalidosUseCaseExcecao e) {
             codResultado = 402;
@@ -141,9 +138,10 @@ public class AtivoControlador {
             msgResultado = "Erro não identificado" + e.getMessage();
         }
 
+        log.logInfo(null,"Controller ativo. Resposta formatada.");
+        return ResponseEntity.status(codResultado).body(lista);
 
-
-        return lista;
+        //return lista;
     }
 
     @GetMapping("/{idLog}")
