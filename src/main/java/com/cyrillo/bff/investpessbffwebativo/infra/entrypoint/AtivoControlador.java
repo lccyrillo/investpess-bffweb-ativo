@@ -41,12 +41,12 @@ public class AtivoControlador {
         String msgResultado;
         HttpStatus codResultado;
         DataProviderInterface dataProvider = FacadeAtivo.getInstance().getDataProviderInterface();
-        String uniqueKey = String.valueOf(dataProvider.getUniqueKey());
-        LogInterface log = dataProvider.getLoggingInterface();
-        log.logInfo(null,"Entrou no método controller incluir ativo");
+        DataProviderInterface sessao = dataProvider.geraSessao();
+        String uniqueKey = String.valueOf(sessao.getUniqueKey());
+        LogInterface log = sessao.getLoggingInterface();
+        log.logInfo(uniqueKey,"Entrou no método controller incluir ativo");
         try {
             // use case
-            DataProviderInterface sessao = dataProvider.geraSessao();
             FacadeAtivo.getInstance().executarIncluirNovoAtivo(sessao,ativoRequest.getSigla(), ativoRequest.getNomeAtivo(), ativoRequest.getDescricaoCNPJAtivo(), ativoRequest.getTipoAtivoInt());
             codResultado = HttpStatus.CREATED;
             msgResultado = "Ativo criado com sucesso";
@@ -64,7 +64,7 @@ public class AtivoControlador {
         }
         catch (AtivoParametrosInvalidosUseCaseExcecao e) {
             codResultado = HttpStatus.UNPROCESSABLE_ENTITY;
-            msgResultado = "Parâmetros inválido enviado na consulta";
+            msgResultado = "Parâmetros inválidos enviados no método da api";
             // 422
         }
         catch(Exception e){
@@ -72,10 +72,10 @@ public class AtivoControlador {
             msgResultado = "Erro não identificado" + e.getMessage();
             // 500 Internal Server Error
         }
-        log.logInfo(null,"Controller ativo. Formatando response.");
+        log.logInfo(uniqueKey,"Controller ativo. Formatando response.");
         //ResponseEntity<AtivoDto> responseEntity = new ResponseEntity<>();
         AtivoResponse ativoResponse = new AtivoResponse(ativoRequest,codResultado.value(),msgResultado);
-        log.logInfo(null,"Controller ativo. Resposta formatada.");
+        log.logInfo(uniqueKey,"Controller ativo. Resposta formatada.");
         return ResponseEntity.status(codResultado).body(ativoResponse);
     }
 

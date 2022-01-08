@@ -3,10 +3,12 @@ package com.cyrillo.bff.investpessbffwebativo.infra.dataprovider;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.AtivoDtoInterface;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.AtivoRepositorioInterface;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.DataProviderInterface;
+import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.LogInterface;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.dto.AtivoDto;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.excecao.AtivoJaExistenteDataProviderExcecao;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.excecao.ComunicacaoRepositorioDataProviderExcecao;
 import com.cyrillo.bff.investpessbffwebativo.core.dataprovider.excecao.DadosInvalidosDataProviderExcecao;
+import com.cyrillo.bff.investpessbffwebativo.infra.facade.FacadeAtivo;
 import proto.ativo.ativoobjetoproto.*;
 
 
@@ -26,6 +28,10 @@ public class AtivoRepositorioImplGRPC implements AtivoRepositorioInterface {
     @Override
     public void incluirAtivo(DataProviderInterface data,String sigla, String nomeAtivo, String descricaoCNPJAtivo, int tipoAtivo) throws ComunicacaoRepositorioDataProviderExcecao, DadosInvalidosDataProviderExcecao, AtivoJaExistenteDataProviderExcecao {
         int responseCode;
+
+        String uniqueKey = String.valueOf(data.getUniqueKey());
+        LogInterface log = data.getLoggingInterface();
+        log.logInfo(uniqueKey,"Entrou em AtivoRepositorioImplGRPC.incluirAtivo");
 
         if (descricaoCNPJAtivo == null || sigla == null || nomeAtivo == null  ) {
             responseCode = 422; //
@@ -48,12 +54,12 @@ public class AtivoRepositorioImplGRPC implements AtivoRepositorioInterface {
                         build();
 
                 CadastraAtivoObjetoResponse response = client.cadastraAtivoObjeto(request);
-                //System.out.println(response.getResponseCode() + " - " + response.getResponseMessage());
+                log.logInfo(uniqueKey,response.getResponseCode() + " - " + response.getResponseMessage());
+
                 responseCode = response.getResponseCode();
             } catch (Exception e) {
                 ComunicacaoRepositorioDataProviderExcecao falha = new ComunicacaoRepositorioDataProviderExcecao("Falha na comunicação com servidor GRPC!");
                 falha.addSuppressed(e);
-                //log.logError(uniqueKey, "Dados inválidos da solicitação.");
                 e.printStackTrace();
                 throw falha;
             }
@@ -65,7 +71,9 @@ public class AtivoRepositorioImplGRPC implements AtivoRepositorioInterface {
         else if (responseCode == 101) {
             throw new AtivoJaExistenteDataProviderExcecao("Ativo já existente!");
         }
-
+        else if (responseCode == 102) {
+            throw new DadosInvalidosDataProviderExcecao("CNPJ inválido!");
+        }
         else if (responseCode == 422) {
             throw new DadosInvalidosDataProviderExcecao("Sigla, nome do ativo ou CPNPJ não podem ser nulos!");
         }
