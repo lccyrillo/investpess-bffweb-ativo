@@ -3,6 +3,7 @@ a) cria o master, deriva a branch developer e deriva a branch infrainicial
 b) Clona o repositorio em algum diretorio (ele vai criar uma pasta)
 >> git clone https://github.com/lccyrillo/investpess-frontweb.git
 
+
 1) setup de trabalho
 >> git config --global user.email "lccyrillo@gmail.com"
 >> git init
@@ -25,7 +26,7 @@ a) (Esse nao esta precisando mais) git remote add origin https://github.com/lccy
 --> adiciono os arquivos necessários
 >> git add .
 --> faço um commit
->> git commit -a -m "CYRILLO_FEAT_0001 - Montar Api de Health check"
+>> git commit -a -m "COMMIT_0014 - ISSUE_#13 - No endpoint da api GET de listagem de ativos, precisa evoluir com os response codes http."
 --> mandar para o repositorio remoto
 >> git push
 
@@ -64,7 +65,7 @@ a) (Esse nao esta precisando mais) git remote add origin https://github.com/lccy
 --> equalizo com a developer
 >> git pull origin developer
 --> faço qualquer alteração e comito
->> git commit -a -m "ISSUE_003 - Organizar arquitetura do BFF para utilizar clean architecture."
+>> git commit -a -m "COMMIT_0010 - ISSUE_#9 - Validar os campos de entrada do método rest Incluir ativo e dar a resposta correta em caso de erro.
 --> manda para o repositorio remoto (o repositorio remoto é criado)
 >> git push origin evolucao_api_delete
 --> posso vincular meu branch local ao branch remoto

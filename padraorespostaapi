@@ -1,0 +1,32 @@
+Padrão de Resposta HTTP da API
+
+Endpoint:
+Post - Ativo
+        // Respostas de informação (100-199),
+        //    Respostas de sucesso (200-299),
+        //    Redirecionamentos (300-399)
+        //    Erros do cliente (400-499)
+        //    Erros do servidor (500-599).
+
+
+            codResultado = HttpStatus.CREATED;
+            msgResultado = "Ativo criado com sucesso";
+            // 201
+
+
+            codResultado = HttpStatus.ALREADY_REPORTED;
+            msgResultado = "Ativo já existente no repositório";
+            // 208
+
+            codResultado = HttpStatus.SERVICE_UNAVAILABLE;
+            msgResultado = "Erro na comunicação com o Repositório!";
+            //503 Service Unavailable
+
+            codResultado = HttpStatus.UNPROCESSABLE_ENTITY;
+            msgResultado = "Parâmetros inválido enviado na consulta";
+            // 422
+
+            codResultado = HttpStatus.INTERNAL_SERVER_ERROR;
+            msgResultado = "Erro não identificado" + e.getMessage();
+            // 500 Internal Server Error
+
