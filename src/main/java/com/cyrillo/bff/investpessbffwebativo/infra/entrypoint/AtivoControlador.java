@@ -13,6 +13,8 @@ import com.cyrillo.bff.investpessbffwebativo.infra.config.Aplicacao;
 import com.cyrillo.bff.investpessbffwebativo.infra.entrypoint.inout.AtivoRequest;
 import com.cyrillo.bff.investpessbffwebativo.infra.entrypoint.inout.AtivoResponse;
 import com.cyrillo.bff.investpessbffwebativo.infra.facade.FacadeAtivo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Api(tags = "Ativo")
 @RestController
 @RequestMapping("/ativo")
 public class AtivoControlador {
@@ -30,6 +33,7 @@ public class AtivoControlador {
     @Autowired
     private LogProcessamentoServico logProcessamentoServico;
 
+    @ApiOperation(value = "Cadastrar um novo ativo")
     @PostMapping
     public ResponseEntity<AtivoResponse> incluirAtivo(@RequestBody AtivoRequest ativoRequest)  {
         // Respostas de informação (100-199),
@@ -47,7 +51,7 @@ public class AtivoControlador {
         log.logInfo(uniqueKey,"Entrou no método controller incluir ativo");
         try {
             // use case
-            FacadeAtivo.getInstance().executarIncluirNovoAtivo(sessao,ativoRequest.getSigla(), ativoRequest.getNomeAtivo(), ativoRequest.getDescricaoCNPJAtivo(), ativoRequest.getTipoAtivoInt());
+            FacadeAtivo.getInstance().executarIncluirNovoAtivo(sessao,ativoRequest.getSigla(), ativoRequest.getNomeAtivo(), ativoRequest.getDescricaoCNPJAtivo(), ativoRequest.getTipoAtivo());
             codResultado = HttpStatus.CREATED;
             msgResultado = "Ativo criado com sucesso";
             // 201
@@ -82,6 +86,7 @@ public class AtivoControlador {
 
 
 
+    @ApiOperation(value = "Listar todos os ativos do tipo ação")
     @GetMapping
     public ResponseEntity<List<AtivoDtoInterface>> listarTodas()  {
     //public List<AtivoDtoInterface> listarTodas(){
@@ -144,6 +149,7 @@ public class AtivoControlador {
         //return lista;
     }
 
+    @ApiOperation(value = "Listar por código")
     @GetMapping("/{idLog}")
     public ResponseEntity<Optional<LogProcessamento>> buscarPorId(@PathVariable(name = "idLog") Long id){
         Optional<LogProcessamento> logProcessamento = logProcessamentoServico.buscaPorId(id);

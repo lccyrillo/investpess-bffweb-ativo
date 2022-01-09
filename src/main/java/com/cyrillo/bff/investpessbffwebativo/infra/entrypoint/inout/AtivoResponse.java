@@ -23,8 +23,8 @@ public class AtivoResponse {
         return ativoRequest.getDescricaoCNPJAtivo();
     }
 
-    public int getTipoAtivoInt() {
-        return ativoRequest.getTipoAtivoInt();
+    public int getTipoAtivo() {
+        return ativoRequest.getTipoAtivo();
     }
 
 

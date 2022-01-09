@@ -24,7 +24,7 @@ public class AtivoRequest {
         return descricaoCNPJAtivo;
     }
 
-    public int getTipoAtivoInt() {
+    public int getTipoAtivo() {
         return tipoAtivo;
     }
 }
