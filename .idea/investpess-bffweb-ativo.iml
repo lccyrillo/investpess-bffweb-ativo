@@ -154,5 +154,14 @@
     <orderEntry type="library" name="Maven: io.opentracing.contrib:opentracing-spring-web:4.0.0" level="project" />
     <orderEntry type="library" name="Maven: io.opentracing.contrib:opentracing-web-servlet-filter:0.4.0" level="project" />
     <orderEntry type="library" name="Maven: io.opentracing.contrib:opentracing-tracerresolver:0.1.8" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-actuator:2.5.6" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-actuator-autoconfigure:2.5.6" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-actuator:2.5.6" level="project" />
+    <orderEntry type="library" name="Maven: io.micrometer:micrometer-core:1.8.2" level="project" />
+    <orderEntry type="library" name="Maven: org.hdrhistogram:HdrHistogram:2.1.12" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.latencyutils:LatencyUtils:2.0.3" level="project" />
+    <orderEntry type="library" name="Maven: io.micrometer:micrometer-registry-prometheus:1.8.2" level="project" />
+    <orderEntry type="library" name="Maven: io.prometheus:simpleclient_common:0.10.0" level="project" />
+    <orderEntry type="library" name="Maven: io.prometheus:simpleclient:0.10.0" level="project" />
   </component>
 </module>

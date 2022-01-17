@@ -28,6 +28,7 @@
 		<os-maven-plugin.version>1.4.1.Final</os-maven-plugin.version>
 		<protobuf.version>3.19.1</protobuf.version>
 		<os.detected.classifier>windows-x86_64</os.detected.classifier>
+		<micrometer.version>1.8.2</micrometer.version>
 
 
 
@@ -127,7 +128,15 @@
 			<version>3.2.2</version>
 		</dependency>
 
-
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+			<version>${micrometer.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
