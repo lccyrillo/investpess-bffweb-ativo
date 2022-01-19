@@ -41,3 +41,5 @@ services:
       - grafana
       - db
     build: docker_ms
+    command: ["-c", "/user/server/wait-for-mysql.sh db:3306 && java -jar /usr/server/investpess-bffweb-ativo.jar"]
+    entrypoint: ["/bin/sh"]
