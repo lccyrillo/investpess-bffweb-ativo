@@ -1,3 +1,8 @@
-gera o jar
+Como gerar o pacote da implantaçao
 
-mvn clean install
+>> mvn clean install
+
+Copiar o arquivo para o diretorio do microsserviço
+>> copy .\target\investpess-bffweb-ativo-0.0.1-SNAPSHOT.jar .\docker\docker_ms\artifacts\investpess_bffweb_ativo_jar\investpess-bffweb-ativo.jar
+
+

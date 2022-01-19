@@ -23,7 +23,7 @@ public class ClienteGRPC {
     public void inicializaClienteGRPC() throws FalhaCriacaoCanalGRPCConfigExcecao {
         try {
             // do some stuff
-            channel = ManagedChannelBuilder.forAddress("localhost", 50051).
+            channel = ManagedChannelBuilder.forAddress("192.168.0.26", 50051).
                     usePlaintext().
                     build();
             instanciaClienteGRPC = AtivoServerServiceGrpc.newBlockingStub(channel);

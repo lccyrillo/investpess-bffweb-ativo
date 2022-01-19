@@ -29,7 +29,7 @@
 		<protobuf.version>3.19.1</protobuf.version>
 		<os.detected.classifier>windows-x86_64</os.detected.classifier>
 		<micrometer.version>1.8.2</micrometer.version>
-
+		<start-class>com.cyrillo.bff.investpessbffwebativo.InvestpessBffwebAtivoApplication</start-class>
 
 
 	</properties>
@@ -132,6 +132,16 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
+
+
+		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-loader -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-loader</artifactId>
+			<version>2.6.2</version>
+		</dependency>
+
+
 		<dependency>
 			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-registry-prometheus</artifactId>
@@ -143,6 +153,8 @@
 			<artifactId>spring-boot-starter-tomcat</artifactId>
 			<version>2.6.2</version>
 		</dependency>
+
+
 
 
 	</dependencies>
@@ -165,6 +177,12 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
+
+
+
+
+
+
 			<plugin>
 				<groupId>org.xolstice.maven.plugins</groupId>
 				<artifactId>protobuf-maven-plugin</artifactId>
