@@ -7,18 +7,21 @@ import com.cyrillo.bff.investpessbffwebativo.infra.dataprovider.AtivoRepositorio
 import com.cyrillo.bff.investpessbffwebativo.infra.dataprovider.ClienteGRPC;
 import com.cyrillo.bff.investpessbffwebativo.infra.dataprovider.LogInterfaceImplConsole;
 import com.cyrillo.bff.investpessbffwebativo.infra.facade.FacadeAtivo;
+
+import java.util.UUID;
+
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 
-import java.util.UUID;
-
 @EntityScan(basePackages = {"com.cyrillo.bff.investpessbffwebativo.core.entidade"})
 @EnableJpaRepositories(basePackages = {"com.cyrillo.bff.investpessbffwebativo.core.repositorio"})
 @ComponentScan(basePackages = {"com.cyrillo.bff.investpessbffwebativo.core.usecase","com.cyrillo.bff.investpessbffwebativo.infra.entrypoint"})
+@EnableAutoConfiguration
 @SpringBootApplication
 public class Aplicacao implements DataProviderInterface {
     private static Aplicacao instance;

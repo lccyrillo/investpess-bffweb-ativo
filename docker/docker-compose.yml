@@ -28,3 +28,16 @@ services:
   #    - 14268:14268
   #    - 14269:14269
   #    - 9411:9411
+  grafana:
+    image: grafana/grafana:8.3.4
+    container_name: grafana_container
+    ports:
+      - 3000:3000
+  microsservico_app:
+    container_name: app_ativobff_container
+    ports:
+      - 8080:8080
+    depends_on:
+      - grafana
+      - db
+    build: docker_ms

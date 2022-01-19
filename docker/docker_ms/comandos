@@ -1,0 +1,10 @@
+
+COPY artifacts/investpess_bffweb_ativo_jar/investpess-bffweb-ativo.jar /app/investpess-bffweb-ativo.jar
+     artifacts/investpess_bffweb_ativo_jar
+COPY artifacts/investpess_ativo_jar/investpess-ativo.jar /usr/server/investpess-ativo.jar
+
+WORKDIR /app
+ENTRYPOINT ["java", "-jar", "/app/investpess-bffweb-ativo.jar" ]
+
+
+artifacts\investpess_bffweb_ativo_jar
